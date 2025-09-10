@@ -1,30 +1,45 @@
 {
-  "name": "netsync",
-  "version": "0.1.0",
+  "name": "netsync-platform",
+  "version": "1.0.0",
+  "description": "NetSync Conference Networking Platform - Monorepo Root",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "./scripts/start.sh",
+    "stop": "./scripts/stop.sh",
+    "deploy": "./scripts/deploy-prod.sh",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:all": "npm run lint:backend && npm run lint:frontend",
+    "test:backend": "cd backend && npm test",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "clean": "docker-compose down -v && docker system prune -f"
   },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.57.0",
-    "framer-motion": "^12.23.12",
-    "lucide-react": "^0.542.0",
-    "next": "15.5.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
+  "keywords": [
+    "conference",
+    "networking",
+    "bot",
+    "platform",
+    "docker",
+    "monorepo"
+  ],
+  "author": "NetSync Team",
+  "license": "MIT",
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.2",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "concurrently": "^8.2.2"
   }
 }

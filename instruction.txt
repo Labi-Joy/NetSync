@@ -1,0 +1,298 @@
+# Conference Networking Bot Platform Development Prompt
+
+## Project Overview
+Build "The Conference Catalyst" - a sophisticated networking bot platform that connects conference attendees based on interests, goals, and expertise, facilitating meaningful real-world connections during events.
+
+## Tech Stack Requirements
+- **Backend**: Node.js with TypeScript, Express.js framework
+- **Database**: MongoDB (primary data storage)
+- **Cache**: Redis (session management, real-time data)
+- **Frontend**: Next.js with TypeScript
+- **API Integration**: Sensay Platform API
+- **Authentication**: JWT-based auth system
+
+## Color Palette & Design Theme
+- **Primary Dark**: #251a1e (main background)
+- **Accent Dark**: #481f30 (secondary elements, headers)
+- **Neon Green**: #cdff81 (primary actions, highlights)
+- **Glow Effect**: Use #cdff81 with CSS glow/shadow effects for interactive elements
+- **Theme**: Dark professional with neon green accents, modern conference aesthetic
+
+## Core Features to Implement
+
+### 1. User Onboarding & Profile System
+- Conversational chat-based profile creation
+- Interest tagging and goal setting
+- Professional background capture
+- Networking style assessment (introvert-friendly options)
+- Conference-specific preferences
+
+### 2. Smart Matching Algorithm
+- Interest-based matching
+- Career stage compatibility (mentor/mentee, peer-to-peer)
+- "Collision detection" for cross-domain connections
+- Real-time availability matching
+- Proximity-based suggestions using venue data
+
+### 3. Chat Bot Integration (Sensay API)
+- Proactive introduction facilitation
+- Personalized conversation starters
+- Real-time event coordination
+- Follow-up conversation prompts
+- Multi-modal support (text, voice notes, images)
+
+### 4. Real-Time Event Features
+- Live attendee tracking
+- Session-based networking opportunities
+- Venue map integration for meetup coordination
+- Schedule parsing for optimal meeting windows
+- Push notifications for networking opportunities
+
+### 5. Admin Dashboard
+- Event management interface
+- Analytics and connection tracking
+- Bot conversation monitoring
+- Attendee engagement metrics
+- Success rate reporting
+
+## Database Schema Design
+
+### Users Collection
+```typescript
+{
+  _id: ObjectId,
+  email: string,
+  name: string,
+  profilePicture?: string,
+  professionalInfo: {
+    title: string,
+    company: string,
+    experience: 'junior' | 'mid' | 'senior' | 'executive',
+    skills: string[],
+    interests: string[]
+  },
+  networkingProfile: {
+    goals: string[],
+    lookingFor: 'mentor' | 'mentee' | 'peers' | 'collaborators' | 'all',
+    communicationStyle: 'proactive' | 'reactive' | 'structured',
+    availability: string[]
+  },
+  currentEvent?: ObjectId,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Events Collection
+```typescript
+{
+  _id: ObjectId,
+  name: string,
+  description: string,
+  startDate: Date,
+  endDate: Date,
+  venue: {
+    name: string,
+    address: string,
+    mapData?: any
+  },
+  schedule: [{
+    sessionId: string,
+    title: string,
+    startTime: Date,
+    endTime: Date,
+    location: string
+  }],
+  attendees: ObjectId[],
+  isActive: boolean,
+  createdAt: Date
+}
+```
+
+### Connections Collection
+```typescript
+{
+  _id: ObjectId,
+  eventId: ObjectId,
+  participants: [ObjectId, ObjectId],
+  matchScore: number,
+  matchReason: string,
+  status: 'suggested' | 'introduced' | 'connected' | 'met' | 'collaborated',
+  conversationStarter: string,
+  suggestedMeetup: {
+    time: Date,
+    location: string,
+    duration: number
+  },
+  interactions: [{
+    type: 'bot_introduction' | 'user_response' | 'meetup_scheduled' | 'feedback',
+    timestamp: Date,
+    data: any
+  }],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+## API Endpoints Structure
+
+### Authentication Routes
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Token refresh
+- `GET /auth/profile` - Get user profile
+
+### User Management
+- `GET /api/users/profile` - Get current user profile
+- `PUT /api/users/profile` - Update user profile
+- `POST /api/users/onboarding` - Complete onboarding process
+- `GET /api/users/networking-style` - Get networking preferences
+
+### Event Management
+- `GET /api/events` - List events
+- `GET /api/events/:id` - Get specific event
+- `POST /api/events/:id/join` - Join event
+- `GET /api/events/:id/attendees` - Get event attendees
+- `GET /api/events/:id/schedule` - Get event schedule
+
+### Networking & Matching
+- `POST /api/networking/find-matches` - Get potential connections
+- `POST /api/networking/request-introduction` - Request bot introduction
+- `GET /api/networking/connections` - Get user's connections
+- `PUT /api/networking/connections/:id/status` - Update connection status
+- `POST /api/networking/feedback` - Provide connection feedback
+
+### Chat Bot Integration (Sensay API)
+- `POST /api/bot/initialize` - Initialize bot session
+- `POST /api/bot/message` - Send message to bot
+- `POST /api/bot/introduce` - Bot-facilitated introduction
+- `GET /api/bot/suggestions` - Get networking suggestions
+- `POST /api/bot/schedule-meetup` - Schedule meetup via bot
+
+### Real-time Features (WebSocket)
+- Connection for live updates
+- Real-time match notifications
+- Live event coordination
+- Proximity-based alerts
+
+## Frontend Pages & Components
+
+### Pages Structure
+- `/` - Landing page with event selection
+- `/auth/login` - Authentication
+- `/auth/register` - User registration
+- `/onboarding` - Conversational profile setup
+- `/dashboard` - Main networking dashboard
+- `/events/[id]` - Event-specific networking
+- `/connections` - Manage connections
+- `/profile` - User profile management
+- `/admin` - Admin dashboard (role-based)
+
+### Key Components
+- `ChatInterface` - Bot conversation UI
+- `MatchCard` - Display potential connections
+- `EventSchedule` - Interactive schedule view
+- `NetworkingDashboard` - Main networking interface
+- `ConnectionStatus` - Track connection progress
+- `MeetupScheduler` - Schedule face-to-face meetings
+- `NotificationCenter` - Real-time alerts
+
+## Sensay API Integration Points
+
+1. **Conversational Onboarding**: Use Sensay for natural profile creation
+2. **Smart Introductions**: Generate personalized introduction messages
+3. **Conversation Facilitation**: Ongoing chat support between connections
+4. **Event Coordination**: Real-time scheduling and location suggestions
+5. **Follow-up Management**: Post-event relationship nurturing
+
+## Real-time Features Implementation
+
+### Redis Usage
+- Session management and user status
+- Real-time match caching
+- Event attendance tracking
+- Chat message queuing
+- Notification delivery
+
+### WebSocket Events
+- `new_match_found` - New potential connection
+- `introduction_received` - Bot facilitated introduction
+- `meetup_scheduled` - Meeting confirmation
+- `proximity_alert` - Nearby connection opportunity
+- `event_update` - Schedule or venue changes
+
+## UI/UX Implementation Guidelines
+
+### Design System
+- Dark theme with #251a1e primary background
+- Use #481f30 for cards, modals, and secondary surfaces
+- #cdff81 neon green for:
+  - Primary buttons and CTAs
+  - Active states and selections
+  - Success indicators
+  - Glow effects on hover/focus
+- Implement subtle glow effects using CSS box-shadow and filter properties
+- Modern, professional typography (consider Inter or similar)
+- Smooth animations and micro-interactions
+
+### Responsive Design
+- Mobile-first approach (conference attendees are mobile-heavy)
+- Touch-friendly interaction zones
+- Optimized chat interface for mobile
+- Swipe gestures for connection cards
+- Progressive Web App features for offline capability
+
+## Development Priorities
+
+1. **Phase 1**: Authentication, user management, basic matching
+2. **Phase 2**: Sensay bot integration, chat interface
+3. **Phase 3**: Real-time features, event coordination
+4. **Phase 4**: Advanced matching algorithm, analytics
+5. **Phase 5**: Admin dashboard, reporting features
+
+## Security & Performance Considerations
+
+- Implement rate limiting for API endpoints
+- Secure user data with proper encryption
+- Optimize MongoDB queries with appropriate indexing
+- Use Redis for caching frequently accessed data
+- Implement proper error handling and logging
+- Set up monitoring and alerting systems
+
+## Testing Requirements
+
+- Unit tests for matching algorithm
+- Integration tests for Sensay API
+- E2E tests for critical user flows
+- Performance testing for real-time features
+- Security testing for authentication flows
+
+## Deployment & DevOps
+
+- Docker containerization
+- Environment-based configuration
+- CI/CD pipeline setup
+- Database migration system
+- Monitoring and logging setup
+- SSL certificate configuration
+
+## Success Metrics to Track
+
+- User engagement rates
+- Successful connection percentages
+- Meetup completion rates
+- User retention across events
+- Bot conversation quality scores
+- Real-world collaboration outcomes
+
+## Additional Features for Future Iterations
+
+- AI-powered conversation analysis
+- Integration with LinkedIn/professional networks
+- Multi-language support
+- Video call integration
+- Event organizer analytics dashboard
+- Sponsor networking opportunities
+- Post-event collaboration tracking
+
+Please implement this system with clean, maintainable code, proper error handling, and comprehensive documentation. Focus on creating an engaging, intuitive user experience that genuinely helps people make meaningful professional connections.

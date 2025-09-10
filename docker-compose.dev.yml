@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # MongoDB Database (Development)
+  mongodb-dev:
+    image: mongo:7
+    container_name: netsync-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: netsync_dev
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - netsync-dev-network
+
+  # Redis Cache (Development)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: netsync-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - netsync-dev-network
+
+  # Backend API (Development)
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: netsync-backend-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGODB_URI: mongodb://mongodb-dev:27017/netsync_dev
+      REDIS_URL: redis://redis-dev:6379
+      JWT_SECRET: development-jwt-secret-not-for-production
+      JWT_EXPIRE: 24h
+      JWT_REFRESH_EXPIRE: 7d
+      SENSAY_API_KEY: ${SENSAY_API_KEY}
+      SENSAY_BASE_URL: https://api.sensay.com
+      FRONTEND_URL: http://localhost:3000
+      LOG_LEVEL: debug
+    depends_on:
+      - mongodb-dev
+      - redis-dev
+    networks:
+      - netsync-dev-network
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/logs:/app/logs
+      - /app/node_modules
+
+  # Frontend Application (Development)
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: netsync-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:5000
+    depends_on:
+      - backend-dev
+    networks:
+      - netsync-dev-network
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  netsync-dev-network:
+    driver: bridge
