@@ -73,7 +73,7 @@ const userSchema = new Schema<IUserDocument>({
   },
   isEmailVerified: {
     type: Boolean,
-    default: false
+    default: true
   },
   refreshTokens: [{
     type: String

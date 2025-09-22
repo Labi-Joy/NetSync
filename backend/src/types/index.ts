@@ -39,6 +39,7 @@ export interface IEvent {
   };
   schedule: IEventSession[];
   attendees: ObjectId[];
+  capacity?: number; // null/undefined means unlimited
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

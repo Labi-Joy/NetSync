@@ -3,6 +3,8 @@ import { IEvent, IEventSession } from '../types';
 
 export interface IEventDocument extends Omit<IEvent, '_id'>, Document {
   isCurrentlyActive(): boolean;
+  hasCapacity(): boolean;
+  remainingSpots(): number | null;
   attendeeCount: number;
 }
 
@@ -66,6 +68,11 @@ const eventSchema = new Schema<IEventDocument>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  capacity: {
+    type: Number,
+    default: null, // null means unlimited
+    min: 1
+  },
   isActive: {
     type: Boolean,
     default: true
@@ -85,6 +92,18 @@ eventSchema.virtual('attendeeCount').get(function() {
 eventSchema.methods.isCurrentlyActive = function(): boolean {
   const now = new Date();
   return this.isActive && now >= this.startDate && now <= this.endDate;
+};
+
+// Check if event has space for more attendees
+eventSchema.methods.hasCapacity = function(): boolean {
+  if (this.capacity === null) return true; // unlimited capacity
+  return this.attendees.length < this.capacity;
+};
+
+// Get remaining spots
+eventSchema.methods.remainingSpots = function(): number | null {
+  if (this.capacity === null) return null; // unlimited
+  return Math.max(0, this.capacity - this.attendees.length);
 };
 
 export const Event = mongoose.model<IEventDocument>('Event', eventSchema);

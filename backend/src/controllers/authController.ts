@@ -5,89 +5,62 @@ import { redisClient } from '../config/database';
 import { JWTPayload } from '../types';
 
 const generateTokens = (userId: string, email: string) => {
-  console.log('🔑 Starting token generation for user:', userId, email);
-  
   const jwtSecret = process.env.JWT_SECRET!;
-  console.log('🔐 JWT secret exists:', !!jwtSecret);
-  console.log('🔐 JWT secret length:', jwtSecret?.length);
-  
   const accessTokenOptions = { expiresIn: process.env.JWT_EXPIRE || '24h' };
   const refreshTokenOptions = { expiresIn: process.env.JWT_REFRESH_EXPIRE || '7d' };
-  
-  console.log('⏰ Token options:', { accessTokenOptions, refreshTokenOptions });
-  
+
   try {
     const accessToken = jwt.sign(
       { userId, email },
       jwtSecret,
       accessTokenOptions as any
     );
-    console.log('✅ Access token generated successfully');
-    
+
     const refreshToken = jwt.sign(
       { userId, email },
       jwtSecret,
       refreshTokenOptions as any
     );
-    console.log('✅ Refresh token generated successfully');
-    
+
     return { accessToken, refreshToken };
   } catch (error) {
-    console.error('❌ Token generation failed:', error);
+    console.error('Token generation failed:', error);
     throw error;
   }
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('🔄 Registration attempt started');
-    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
-    
     const { email, password, name, professionalInfo, networkingProfile } = req.body;
-    
-    console.log('📧 Extracted email:', email);
-    console.log('👤 Extracted name:', name);
-    console.log('💼 Professional info:', professionalInfo);
-    
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log('❌ User already exists with email:', email);
       res.status(409).json({ error: 'Email already registered' });
       return;
     }
-    
-    console.log('✅ Email is available, creating new user');
-    
+
     const user = new User({
       email,
       password,
       name,
       professionalInfo,
-      networkingProfile: networkingProfile || {}
+      networkingProfile: networkingProfile || {},
+      isEmailVerified: true // Auto-verify all users on signup
     });
-    
-    console.log('💾 Saving user to database...');
+
     await user.save();
-    console.log('✅ User saved successfully with ID:', user._id);
-    
-    console.log('🔑 Generating tokens...');
+
     const { accessToken, refreshToken } = generateTokens((user._id as any).toString(), user.email);
-    console.log('✅ Tokens generated successfully');
-    
+
     user.refreshTokens.push(refreshToken);
-    console.log('💾 Saving refresh token...');
     await user.save();
-    console.log('✅ Refresh token saved');
-    
-    console.log('📡 Saving session to Redis...');
+
     await redisClient.setEx(`user:${user._id}:session`, 86400, JSON.stringify({
       userId: user._id,
       email: user.email,
       lastActivity: new Date()
     }));
-    console.log('✅ Session saved to Redis');
-    
-    console.log('🎉 Registration completed successfully!');
+
     res.status(201).json({
       message: 'User registered successfully',
       user: user.toJSON(),

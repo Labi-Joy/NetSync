@@ -59,7 +59,10 @@ export const getEventById = async (req: AuthenticatedRequest, res: Response): Pr
       event: {
         ...event.toJSON(),
         isAttending,
-        attendeeCount: event.attendees.length
+        attendeeCount: event.attendees.length,
+        capacity: event.capacity,
+        remainingSpots: event.remainingSpots(),
+        hasCapacity: event.hasCapacity()
       }
     });
   } catch (error) {
@@ -94,7 +97,17 @@ export const joinEvent = async (req: AuthenticatedRequest, res: Response): Promi
       res.status(400).json({ error: 'Already attending this event' });
       return;
     }
-    
+
+    // Check capacity limits
+    if (!event.hasCapacity()) {
+      res.status(400).json({
+        error: 'Event is at full capacity',
+        capacity: event.capacity,
+        currentAttendees: event.attendees.length
+      });
+      return;
+    }
+
     event.attendees.push(req.user._id as any);
     await event.save();
     

@@ -22,6 +22,7 @@ import userRoutes from './routes/users';
 import eventRoutes from './routes/events';
 import networkingRoutes from './routes/networking';
 import botRoutes from './routes/bot';
+import uploadRoutes from './routes/upload';
 
 dotenv.config();
 
@@ -41,6 +42,9 @@ app.use(cors(corsOptions));
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static file serving for uploads
+app.use('/uploads', express.static('uploads'));
 
 // Request logging is handled by the proper logging middleware below
 
@@ -69,6 +73,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/networking', networkingRoutes);
 app.use('/api/bot', botRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 404 handler for undefined routes
 app.use('*', notFoundHandler);
