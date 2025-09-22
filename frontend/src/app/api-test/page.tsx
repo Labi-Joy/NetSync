@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { authAPI } from '@/lib/api';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 export default function APITestPage() {
   const [result, setResult] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -13,7 +15,7 @@ export default function APITestPage() {
     console.log('🧪 Testing health endpoint');
     
     try {
-      const response = await fetch('http://localhost:5000/health');
+      const response = await fetch(`${API_BASE_URL}/health`);
       const data = await response.json();
       
       console.log('✅ Health endpoint response:', data);
@@ -75,7 +77,7 @@ export default function APITestPage() {
     console.log('📝 Direct test user data:', testUserData);
 
     try {
-      const response = await fetch('http://localhost:5000/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

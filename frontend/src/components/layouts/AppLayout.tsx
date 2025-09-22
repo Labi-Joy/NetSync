@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { PresenceIndicator } from '@/components/realtime/PresenceIndicator';
+import { RealtimeNotifications } from '@/components/realtime/RealtimeNotifications';
 import {
   HomeIcon,
   UsersIcon,
@@ -116,12 +118,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title, description }) =
         <div className="flex-1 flex flex-col min-h-0 bg-primary-accent">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <div className="flex items-center">
-                <div className="h-8 w-8 bg-neon-green rounded-lg flex items-center justify-center">
-                  <span className="text-primary-dark font-bold text-lg">N</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center">
+                  <div className="h-8 w-8 bg-neon-green rounded-lg flex items-center justify-center">
+                    <span className="text-primary-dark font-bold text-lg">N</span>
+                  </div>
+                  <span className="ml-2 text-xl font-bold text-white">NetSync</span>
                 </div>
-                <span className="ml-2 text-xl font-bold text-white">NetSync</span>
+                <div className="flex items-center space-x-2">
+                  <RealtimeNotifications />
+                </div>
               </div>
+            </div>
+
+            {/* Presence Indicator */}
+            <div className="px-4 mt-3">
+              <PresenceIndicator showDetails={false} className="text-white" />
             </div>
             <nav className="mt-5 flex-1 px-2 space-y-1">
               {navigation.map((item) => (
@@ -163,14 +175,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title, description }) =
       {/* Main content */}
       <div className="md:pl-64 flex flex-col flex-1">
         <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-primary-dark">
-          <button
-            type="button"
-            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-neutral-500 hover:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Bars3Icon className="h-6 w-6" />
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-neutral-500 hover:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <span className="sr-only">Open sidebar</span>
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+
+            {/* Mobile presence and notifications */}
+            <div className="flex items-center space-x-2 pr-4">
+              <PresenceIndicator showDetails={false} />
+              <RealtimeNotifications />
+            </div>
+          </div>
         </div>
 
         <main className="flex-1">

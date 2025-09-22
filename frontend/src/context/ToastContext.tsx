@@ -4,10 +4,14 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { ToastContainer, ToastType } from '@/components/ui/Toast';
 
 interface ToastContextType {
-  showToast: (toast: Omit<ToastType, 'id'>) => void;
-  showSuccess: (title: string, message?: string) => void;
-  showError: (title: string, message?: string) => void;
-  showInfo: (title: string, message?: string) => void;
+  toasts: ToastType[];
+  showToast: (toast: Omit<ToastType, 'id'>) => string;
+  hideToast: (id: string) => void;
+  hideAllToasts: () => void;
+  showSuccess: (title: string, message?: string, options?: Partial<ToastType>) => string;
+  showError: (title: string, message?: string, options?: Partial<ToastType>) => string;
+  showWarning: (title: string, message?: string, options?: Partial<ToastType>) => string;
+  showInfo: (title: string, message?: string, options?: Partial<ToastType>) => string;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -20,33 +24,73 @@ export const useToast = () => {
   return context;
 };
 
-export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+interface ToastProviderProps {
+  children: React.ReactNode;
+  maxToasts?: number;
+}
+
+export const ToastProvider = ({ children, maxToasts = 5 }: ToastProviderProps) => {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
   const removeToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
-  const showToast = useCallback((toast: Omit<ToastType, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: ToastType = { ...toast, id };
-    setToasts(prev => [...prev, newToast]);
+  const generateId = useCallback(() => {
+    return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }, []);
 
-  const showSuccess = useCallback((title: string, message?: string) => {
-    showToast({ type: 'success', title, message });
+  const showToast = useCallback((toast: Omit<ToastType, 'id'>) => {
+    const id = generateId();
+    const newToast: ToastType = {
+      duration: 5000,
+      ...toast,
+      id,
+    };
+
+    setToasts(prev => {
+      const updated = [newToast, ...prev];
+      return updated.slice(0, maxToasts);
+    });
+
+    return id;
+  }, [generateId, maxToasts]);
+
+  const hideToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
+
+  const hideAllToasts = useCallback(() => {
+    setToasts([]);
+  }, []);
+
+  const showSuccess = useCallback((title: string, message?: string, options?: Partial<ToastType>) => {
+    return showToast({ type: 'success', title, message, ...options });
   }, [showToast]);
 
-  const showError = useCallback((title: string, message?: string) => {
-    showToast({ type: 'error', title, message });
+  const showError = useCallback((title: string, message?: string, options?: Partial<ToastType>) => {
+    return showToast({ type: 'error', title, message, ...options });
   }, [showToast]);
 
-  const showInfo = useCallback((title: string, message?: string) => {
-    showToast({ type: 'info', title, message });
+  const showWarning = useCallback((title: string, message?: string, options?: Partial<ToastType>) => {
+    return showToast({ type: 'warning', title, message, ...options });
+  }, [showToast]);
+
+  const showInfo = useCallback((title: string, message?: string, options?: Partial<ToastType>) => {
+    return showToast({ type: 'info', title, message, ...options });
   }, [showToast]);
 
   return (
-    <ToastContext.Provider value={{ showToast, showSuccess, showError, showInfo }}>
+    <ToastContext.Provider value={{
+      toasts,
+      showToast,
+      hideToast,
+      hideAllToasts,
+      showSuccess,
+      showError,
+      showWarning,
+      showInfo
+    }}>
       {children}
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </ToastContext.Provider>

@@ -82,7 +82,7 @@ const TICKET_TYPE_CONFIG = {
 export default function EventAttendeesPage() {
   const params = useParams();
   const router = useRouter();
-  const eventId = params.id as string;
+  const eventId = params.eventId as string;
   
   const [event, setEvent] = useState<Event | null>(null);
   const [attendees, setAttendees] = useState<Attendee[]>([]);

@@ -15,28 +15,52 @@ export const connectMongoDB = async (): Promise<void> => {
   }
 };
 
-export const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
+// Create Redis client with proper URL validation
+const createRedisClient = () => {
+  const redisUrl = process.env.REDIS_URL;
+
+  // Skip Redis if no valid URL provided or using placeholder
+  if (!redisUrl || redisUrl.includes('your-redis-password') || redisUrl.includes('your-redis-host')) {
+    console.log('⚠️  Redis URL not configured, skipping Redis connection');
+    return null;
+  }
+
+  try {
+    return createClient({ url: redisUrl });
+  } catch (error) {
+    console.error('Redis client creation error:', error);
+    return null;
+  }
+};
+
+export const redisClient = createRedisClient();
 
 export const connectRedis = async (): Promise<void> => {
+  if (!redisClient) {
+    console.log('📝 Running without Redis - some features may be limited');
+    return;
+  }
+
   try {
     await redisClient.connect();
     console.log('Connected to Redis successfully');
   } catch (error) {
     console.error('Redis connection error:', error);
-    process.exit(1);
+    console.log('📝 Continuing without Redis - some features may be limited');
   }
 };
 
-redisClient.on('error', (err) => {
-  console.error('Redis error:', err);
-});
+// Add Redis event handlers only if client exists
+if (redisClient) {
+  redisClient.on('error', (err) => {
+    console.error('Redis error:', err);
+  });
 
-redisClient.on('connect', () => {
-  console.log('Redis client connected');
-});
+  redisClient.on('connect', () => {
+    console.log('Redis client connected');
+  });
 
-redisClient.on('ready', () => {
-  console.log('Redis client ready');
-});
+  redisClient.on('ready', () => {
+    console.log('Redis client ready');
+  });
+}

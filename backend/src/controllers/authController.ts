@@ -30,15 +30,30 @@ const generateTokens = (userId: string, email: string) => {
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
+  console.log('🚀 Registration request started');
+  console.log('📝 Request body keys:', Object.keys(req.body));
+  console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+
   try {
     const { email, password, name, professionalInfo, networkingProfile } = req.body;
 
+    console.log('✅ Extracted registration data:');
+    console.log('   - Email:', email);
+    console.log('   - Name:', name);
+    console.log('   - Has password:', !!password);
+    console.log('   - Professional info:', JSON.stringify(professionalInfo, null, 2));
+    console.log('   - Networking profile:', JSON.stringify(networkingProfile, null, 2));
+
+    console.log('🔍 Checking for existing user with email:', email);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log('❌ User already exists with email:', email);
       res.status(409).json({ error: 'Email already registered' });
       return;
     }
+    console.log('✅ No existing user found, proceeding with registration');
 
+    console.log('🏗️ Creating new user object');
     const user = new User({
       email,
       password,
@@ -47,20 +62,34 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       networkingProfile: networkingProfile || {},
       isEmailVerified: true // Auto-verify all users on signup
     });
+    console.log('✅ User object created successfully');
 
+    console.log('💾 Saving user to database...');
     await user.save();
+    console.log('✅ User saved to database with ID:', user._id);
 
+    console.log('🔑 Generating access and refresh tokens...');
     const { accessToken, refreshToken } = generateTokens((user._id as any).toString(), user.email);
+    console.log('✅ Tokens generated successfully');
 
+    console.log('🔄 Adding refresh token to user...');
     user.refreshTokens.push(refreshToken);
     await user.save();
+    console.log('✅ Refresh token saved to user');
 
-    await redisClient.setEx(`user:${user._id}:session`, 86400, JSON.stringify({
-      userId: user._id,
-      email: user.email,
-      lastActivity: new Date()
-    }));
+    console.log('🗄️ Storing session in Redis...');
+    if (redisClient) {
+      await redisClient.setEx(`user:${user._id}:session`, 86400, JSON.stringify({
+        userId: user._id,
+        email: user.email,
+        lastActivity: new Date()
+      }));
+      console.log('✅ Session stored in Redis');
+    } else {
+      console.log('⚠️ Redis not available, skipping session storage');
+    }
 
+    console.log('🎉 Registration completed successfully for:', email);
     res.status(201).json({
       message: 'User registered successfully',
       user: user.toJSON(),

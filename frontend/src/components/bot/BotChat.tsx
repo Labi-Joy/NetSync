@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { enhancedBotAPI } from "@/lib/apiWithRetry";
+import { useToast } from "@/context/ToastContext";
 
 interface MessageItem {
   text: string;
@@ -19,10 +20,10 @@ export function BotChat({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<BotSession | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const { showSuccess, showError, showInfo } = useToast();
 
-  // Initialize bot session when component mounts
-  useEffect(() => {
-    const initializeBotSession = async () => {
+  const initializeBotSession = async () => {
       if (!userId || initialized) return;
       
       try {
@@ -40,15 +41,16 @@ export function BotChat({ userId }: { userId: string }) {
           sessionId: response.data.sessionId,
           conversationId: response.data.conversationId
         });
-        
-        // Add welcome message
+
+        // Add welcome message with capabilities
         setMessages([{
           text: response.data.welcomeMessage || "Hi! I'm your NetSync assistant. I can help you with networking, finding matches, and scheduling meetups. How can I assist you today?",
           isBot: true,
           timestamp: new Date()
         }]);
-        
+
         setInitialized(true);
+        showSuccess('Bot Connected', 'Your networking assistant is ready to help!');
         console.log('✅ Bot session initialized successfully');
       } catch (error) {
         console.error('❌ Failed to initialize bot session:', error);
@@ -58,11 +60,22 @@ export function BotChat({ userId }: { userId: string }) {
           timestamp: new Date()
         }]);
         setInitialized(true);
+        showError('Connection Issue', 'Bot is running in offline mode', {
+          action: {
+            label: 'Retry Connection',
+            onClick: () => {
+              setInitialized(false);
+            }
+          }
+        });
       }
     };
 
+  // Initialize bot session when component mounts
+  useEffect(() => {
+    if (!userId || initialized) return;
     initializeBotSession();
-  }, [userId, initialized]);
+  }, [userId, initialized, showError, showSuccess]);
 
   const sendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -76,6 +89,7 @@ export function BotChat({ userId }: { userId: string }) {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
+    setTyping(true);
     
     try {
       console.log('💬 Sending message to bot:', message);
@@ -101,6 +115,12 @@ export function BotChat({ userId }: { userId: string }) {
       setTimeout(() => {
         setMessages((prev) => [...prev, botMessage]);
         setLoading(false);
+        setTyping(false);
+
+        // Show suggestions if provided
+        if (response.data.suggestions && response.data.suggestions.length > 0) {
+          showInfo('Suggestions Available', 'The bot has provided some helpful suggestions for you.');
+        }
       }, 600);
       
       console.log('✅ Bot response received');
@@ -116,6 +136,16 @@ export function BotChat({ userId }: { userId: string }) {
         timestamp: new Date()
       }]);
       setLoading(false);
+      setTyping(false);
+
+      showError('Bot Offline', 'Using fallback responses. Try reconnecting for full functionality.', {
+        action: {
+          label: 'Reconnect',
+          onClick: () => {
+            setInitialized(false);
+          }
+        }
+      });
     }
   };
 
@@ -157,10 +187,17 @@ export function BotChat({ userId }: { userId: string }) {
             </div>
           </div>
         ))}
-        {loading && (
+        {typing && (
           <div className="flex justify-start">
-            <div className="max-w-xs p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-slate-800 dark:text-slate-200 border border-blue-100 dark:border-blue-800 animate-pulse">
-              typing...
+            <div className="max-w-xs p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-slate-800 dark:text-slate-200 border border-blue-100 dark:border-blue-800">
+              <div className="flex items-center space-x-1">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                </div>
+                <span className="text-xs text-blue-600 dark:text-blue-400 ml-2">Assistant is typing...</span>
+              </div>
             </div>
           </div>
         )}
@@ -178,9 +215,10 @@ export function BotChat({ userId }: { userId: string }) {
         />
         <button
           onClick={() => sendMessage(input)}
-          className="btn-primary px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all"
+          disabled={loading || typing || !input.trim()}
+          className="btn-primary px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Send
+          {loading || typing ? 'Sending...' : 'Send'}
         </button>
       </div>
     </div>

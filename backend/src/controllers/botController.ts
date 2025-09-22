@@ -6,28 +6,39 @@ const sensayService = new SensayService();
 
 export const initializeBot = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { eventId } = req.body;
-    
+    const { userId, eventId, context, preferences } = req.body;
+
     if (!req.user) {
       res.status(401).json({ error: 'User not authenticated' });
       return;
     }
-    
+
+    // Use provided userId or default to authenticated user
+    const targetUserId = userId || (req.user._id as any).toString();
+
+    // Use provided eventId or try to get from user context
     const currentEventId = eventId || req.user.currentEvent?.toString();
-    if (!currentEventId) {
-      res.status(400).json({ error: 'Event context required' });
-      return;
-    }
-    
-    const conversationId = await sensayService.initializeSession(
-      (req.user._id as any).toString(),
-      currentEventId
+
+    // Initialize session with context
+    const result = await sensayService.initializeSession(
+      targetUserId,
+      currentEventId || 'general', // Allow general sessions without event context
+      context || 'dashboard_chat',
+      preferences || {}
     );
-    
+
     res.json({
       message: 'Bot session initialized successfully',
-      conversationId,
-      welcomeMessage: 'Hello! I\'m your networking assistant. I\'m here to help you make meaningful connections at this event. How can I assist you today?'
+      sessionId: result.sessionId,
+      conversationId: result.conversationId,
+      welcomeMessage: result.welcomeMessage || 'Hello! I\'m your NetSync networking assistant. I\'m here to help you make meaningful connections and navigate networking opportunities. How can I assist you today?',
+      capabilities: [
+        'Find networking matches',
+        'Schedule meetups',
+        'Provide conversation starters',
+        'Suggest networking opportunities',
+        'Facilitate introductions'
+      ]
     });
   } catch (error) {
     console.error('Initialize bot error:', error);
@@ -37,23 +48,33 @@ export const initializeBot = async (req: AuthenticatedRequest, res: Response): P
 
 export const sendMessage = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { conversationId, message } = req.body;
-    
-    if (!conversationId || !message) {
-      res.status(400).json({ error: 'Conversation ID and message are required' });
+    const { conversationId, sessionId, message, context } = req.body;
+
+    if (!message) {
+      res.status(400).json({ error: 'Message is required' });
       return;
     }
-    
+
+    if (!conversationId && !sessionId) {
+      res.status(400).json({ error: 'Either conversation ID or session ID is required' });
+      return;
+    }
+
     const response = await sensayService.sendMessage(
-      conversationId,
+      conversationId || sessionId,
       message,
-      (req.user._id as any).toString()
+      (req.user._id as any).toString(),
+      context
     );
-    
+
     res.json({
-      response: response.message,
-      suggestions: response.suggestions,
-      actions: response.actions
+      message: response.message,
+      response: response.message, // Legacy compatibility
+      suggestions: response.suggestions || [],
+      actions: response.actions || [],
+      conversationStarters: response.conversationStarters,
+      timestamp: new Date().toISOString(),
+      messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     });
   } catch (error) {
     console.error('Send message to bot error:', error);
@@ -89,20 +110,28 @@ export const requestIntroduction = async (req: AuthenticatedRequest, res: Respon
 
 export const getSuggestions = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { eventId } = req.query;
-    
+    const { eventId, type, limit } = req.query;
+
     const currentEventId = (eventId as string) || req.user.currentEvent?.toString();
-    if (!currentEventId) {
-      res.status(400).json({ error: 'Event context required' });
-      return;
-    }
-    
+    const suggestionType = (type as string) || 'networking';
+    const maxResults = parseInt(limit as string) || 10;
+
     const suggestions = await sensayService.getSuggestions(
       (req.user._id as any).toString(),
-      currentEventId
+      currentEventId || 'general',
+      suggestionType,
+      maxResults
     );
-    
-    res.json(suggestions);
+
+    res.json({
+      suggestions: suggestions.suggestions || [],
+      opportunities: suggestions.opportunities || [],
+      recommendations: suggestions.recommendations || [],
+      type: suggestionType,
+      eventId: currentEventId,
+      timestamp: new Date().toISOString(),
+      ...suggestions
+    });
   } catch (error) {
     console.error('Get bot suggestions error:', error);
     res.status(500).json({ error: 'Failed to get suggestions' });
@@ -112,27 +141,33 @@ export const getSuggestions = async (req: AuthenticatedRequest, res: Response): 
 export const scheduleMeetup = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { conversationId, participants, preferences } = req.body;
-    
+
     if (!conversationId || !participants) {
       res.status(400).json({ error: 'Conversation ID and participants are required' });
       return;
     }
-    
+
     // Ensure current user is in participants
-    if (!participants.includes((req.user._id as any).toString())) {
-      participants.push((req.user._id as any).toString());
+    const currentUserId = (req.user._id as any).toString();
+    if (!participants.includes(currentUserId)) {
+      participants.push(currentUserId);
     }
-    
+
     const meetup = await sensayService.scheduleMeetup(
       conversationId,
       participants,
-      preferences || {}
+      preferences || {},
+      currentUserId
     );
-    
+
     res.json({
+      success: true,
       meetup: meetup.scheduledMeetup,
       confirmation: meetup.confirmationMessage,
-      calendarInvite: meetup.calendarInvite
+      calendarInvite: meetup.calendarInvite,
+      participants: participants,
+      scheduledBy: currentUserId,
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Schedule meetup error:', error);

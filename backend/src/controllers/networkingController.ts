@@ -1,7 +1,9 @@
 import { Response } from 'express';
 import { Connection } from '../models/Connection';
+import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { MatchingService } from '../services/matchingService';
+import PaginationHelper from '../utils/pagination';
 
 const matchingService = new MatchingService();
 
@@ -213,5 +215,164 @@ export const skipMatch = async (req: AuthenticatedRequest, res: Response): Promi
   } catch (error) {
     console.error('Skip match error:', error);
     res.status(500).json({ error: 'Failed to skip match' });
+  }
+};
+
+// Enhanced user search with pagination
+export const searchUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    // Build filter query
+    const filter: any = {};
+
+    // Text search
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search as string, 'i');
+      filter.$or = [
+        { name: searchRegex },
+        { 'professionalInfo.title': searchRegex },
+        { 'professionalInfo.company': searchRegex }
+      ];
+    }
+
+    // Skills filter
+    if (req.query.skills) {
+      const skills = (req.query.skills as string).split(',').map(s => s.trim());
+      filter['professionalInfo.skills'] = { $in: skills };
+    }
+
+    // Interests filter
+    if (req.query.interests) {
+      const interests = (req.query.interests as string).split(',').map(i => i.trim());
+      filter['professionalInfo.interests'] = { $in: interests };
+    }
+
+    // Experience level filter
+    if (req.query.experience) {
+      filter['professionalInfo.experience'] = req.query.experience;
+    }
+
+    // Company filter
+    if (req.query.company) {
+      filter['professionalInfo.company'] = new RegExp(req.query.company as string, 'i');
+    }
+
+    // Title filter
+    if (req.query.title) {
+      filter['professionalInfo.title'] = new RegExp(req.query.title as string, 'i');
+    }
+
+    // Exclude current user
+    filter._id = { $ne: req.user._id };
+
+    // Parse pagination
+    const pagination = PaginationHelper.parseQuery(req, {
+      defaultLimit: 20,
+      maxLimit: 100,
+      sort: 'name',
+      sortOrder: 'asc'
+    });
+
+    // Execute paginated query
+    const result = await PaginationHelper.paginate(
+      User,
+      filter,
+      pagination,
+      {
+        select: '-password -refreshTokens',
+        lean: true
+      }
+    );
+
+    res.json({
+      users: result.data,
+      pagination: result.pagination,
+      meta: {
+        ...result.meta,
+        filters: {
+          search: req.query.search,
+          skills: req.query.skills,
+          interests: req.query.interests,
+          experience: req.query.experience,
+          company: req.query.company,
+          title: req.query.title
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Search users error:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+};
+
+// Get connections with enhanced pagination
+export const getConnectionsEnhanced = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    // Build filter query
+    const filter: any = {
+      participants: req.user._id
+    };
+
+    // Status filter
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+
+    // Event filter
+    if (req.query.eventId) {
+      filter.eventId = req.query.eventId;
+    }
+
+    // Minimum score filter
+    if (req.query.minScore) {
+      filter.matchScore = { $gte: parseFloat(req.query.minScore as string) };
+    }
+
+    // Date range filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) {
+        filter.createdAt.$gte = new Date(req.query.dateFrom as string);
+      }
+      if (req.query.dateTo) {
+        filter.createdAt.$lte = new Date(req.query.dateTo as string);
+      }
+    }
+
+    // Parse pagination
+    const pagination = PaginationHelper.parseQuery(req, {
+      defaultLimit: 20,
+      maxLimit: 100,
+      sort: 'createdAt',
+      sortOrder: 'desc'
+    });
+
+    // Execute paginated query
+    const result = await PaginationHelper.paginate(
+      Connection,
+      filter,
+      pagination,
+      {
+        populate: 'participants eventId',
+        select: 'name email professionalInfo'
+      }
+    );
+
+    res.json({
+      connections: result.data,
+      pagination: result.pagination,
+      meta: {
+        ...result.meta,
+        filters: {
+          status: req.query.status,
+          eventId: req.query.eventId,
+          minScore: req.query.minScore,
+          dateFrom: req.query.dateFrom,
+          dateTo: req.query.dateTo
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get connections error:', error);
+    res.status(500).json({ error: 'Failed to get connections' });
   }
 };

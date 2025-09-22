@@ -126,46 +126,86 @@ export class SensayService {
     return "That's interesting! I'm here to help facilitate meaningful connections and suggest networking opportunities. Is there anything specific you'd like help with regarding networking at this event?";
   }
   
-  public async initializeSession(userId: string, eventId: string): Promise<string> {
+  public async initializeSession(
+    userId: string,
+    eventId: string,
+    context?: string,
+    preferences?: any
+  ): Promise<{ sessionId: string; conversationId: string; welcomeMessage: string }> {
     try {
+      const sessionId = `session_${userId}_${Date.now()}`;
       const conversationId = `conv_${userId}_${eventId}_${Date.now()}`;
-      
+
+      const userPreferences = await this.getUserPreferences(userId);
       const sessionData = {
+        sessionId,
         conversationId,
         userId,
         eventId,
         context: {
           purpose: 'networking_facilitation',
-          event_context: true,
-          user_preferences: await this.getUserPreferences(userId)
-        }
+          session_type: context || 'dashboard_chat',
+          event_context: eventId !== 'general',
+          user_preferences: { ...userPreferences, ...preferences }
+        },
+        createdAt: new Date().toISOString()
       };
-      
+
       await redisClient.setEx(
-        `sensay:session:${conversationId}`,
+        `sensay:session:${sessionId}`,
         3600, // 1 hour
         JSON.stringify(sessionData)
       );
-      
+
+      await redisClient.setEx(
+        `sensay:conversation:${conversationId}`,
+        3600, // 1 hour
+        JSON.stringify(sessionData)
+      );
+
       const response = await this.makeRequest('/conversations/initialize', {
         conversation_id: conversationId,
+        session_id: sessionId,
         context: sessionData.context
       });
-      
-      return conversationId;
+
+      const welcomeMessage = this.getContextualWelcomeMessage(context, eventId !== 'general');
+
+      return {
+        sessionId,
+        conversationId,
+        welcomeMessage
+      };
     } catch (error) {
       console.error('Initialize Sensay session error:', error);
       throw error;
     }
   }
   
-  public async sendMessage(conversationId: string, message: string, userId: string): Promise<any> {
+  public async sendMessage(
+    conversationId: string,
+    message: string,
+    userId: string,
+    context?: any
+  ): Promise<any> {
     try {
-      const sessionData = await this.getSessionData(conversationId);
+      let sessionData = await this.getSessionData(conversationId);
+
+      // Try to get session data from conversation if not found
       if (!sessionData) {
-        throw new Error('Session not found');
+        sessionData = await this.getConversationData(conversationId);
       }
-      
+
+      if (!sessionData) {
+        throw new Error('Session or conversation not found');
+      }
+
+      const enrichedContext = {
+        ...sessionData.context,
+        message_context: context,
+        timestamp: new Date().toISOString()
+      };
+
       const response = await this.makeRequest('/conversations/message', {
         conversation_id: conversationId,
         message: {
@@ -173,17 +213,18 @@ export class SensayService {
           content: message,
           user_id: userId
         },
-        context: sessionData.context
+        context: enrichedContext
       });
-      
+
       // Store conversation history in Redis
       await this.storeMessage(conversationId, 'user', message);
       await this.storeMessage(conversationId, 'assistant', response.message);
-      
+
       return {
         message: response.message,
         suggestions: response.suggestions || [],
-        actions: response.actions || []
+        actions: response.actions || [],
+        conversationStarters: response.conversation_starters
       };
     } catch (error) {
       console.error('Send Sensay message error:', error);
@@ -223,24 +264,34 @@ export class SensayService {
     }
   }
   
-  public async getSuggestions(userId: string, eventId: string): Promise<any> {
+  public async getSuggestions(
+    userId: string,
+    eventId: string,
+    type?: string,
+    limit?: number
+  ): Promise<any> {
     try {
       const userPrefs = await this.getUserPreferences(userId);
-      
+
       const response = await this.makeRequest('/suggestions/networking', {
         user_id: userId,
         event_id: eventId,
+        type: type || 'networking',
+        limit: limit || 10,
         preferences: userPrefs,
         context: {
           current_time: new Date().toISOString(),
-          networking_goals: userPrefs.networking_goals
+          networking_goals: userPrefs.networking_goals,
+          suggestion_context: type
         }
       });
-      
+
       return {
         suggestions: response.suggestions || [],
         opportunities: response.opportunities || [],
-        recommendations: response.recommendations || []
+        recommendations: response.recommendations || [],
+        type,
+        count: (response.suggestions?.length || 0) + (response.opportunities?.length || 0)
       };
     } catch (error) {
       console.error('Get Sensay suggestions error:', error);
@@ -251,19 +302,38 @@ export class SensayService {
   public async scheduleMeetup(
     conversationId: string,
     participants: string[],
-    preferences: any
+    preferences: any,
+    scheduledBy?: string
   ): Promise<any> {
     try {
       const response = await this.makeRequest('/meetups/schedule', {
         conversation_id: conversationId,
         participants,
+        scheduled_by: scheduledBy,
         preferences: {
           duration: preferences.duration || 30,
           location_type: preferences.locationType || 'conference_venue',
-          time_preference: preferences.timePreference || 'flexible'
-        }
+          time_preference: preferences.timePreference || 'flexible',
+          ...preferences
+        },
+        timestamp: new Date().toISOString()
       });
-      
+
+      // Store meetup info in Redis for tracking
+      const meetupData = {
+        ...response.meetup,
+        conversationId,
+        participants,
+        scheduledBy,
+        createdAt: new Date().toISOString()
+      };
+
+      await redisClient.setEx(
+        `sensay:meetup:${response.meetup.id}`,
+        86400, // 24 hours
+        JSON.stringify(meetupData)
+      );
+
       return {
         scheduledMeetup: response.meetup,
         confirmationMessage: response.confirmation,
@@ -303,13 +373,41 @@ export class SensayService {
     }
   }
   
-  private async getSessionData(conversationId: string): Promise<any> {
+  private async getSessionData(sessionId: string): Promise<any> {
     try {
-      const sessionData = await redisClient.get(`sensay:session:${conversationId}`);
+      const sessionData = await redisClient.get(`sensay:session:${sessionId}`);
       return sessionData ? JSON.parse(sessionData) : null;
     } catch (error) {
       console.error('Get session data error:', error);
       return null;
+    }
+  }
+
+  private async getConversationData(conversationId: string): Promise<any> {
+    try {
+      const conversationData = await redisClient.get(`sensay:conversation:${conversationId}`);
+      return conversationData ? JSON.parse(conversationData) : null;
+    } catch (error) {
+      console.error('Get conversation data error:', error);
+      return null;
+    }
+  }
+
+  private getContextualWelcomeMessage(context?: string, hasEventContext?: boolean): string {
+    const baseMessage = "Hello! I'm your NetSync networking assistant.";
+
+    switch (context) {
+      case 'event_chat':
+        return `${baseMessage} I'm here to help you make the most of this event by facilitating meaningful connections and suggesting networking opportunities. What would you like to achieve today?`;
+
+      case 'networking_session':
+        return `${baseMessage} I can help you find relevant connections, schedule meetups, and provide conversation starters. How can I assist with your networking goals?`;
+
+      case 'introduction':
+        return `${baseMessage} I'm here to facilitate introductions and help you connect with the right people. Let me know who you'd like to meet or what you're looking for!`;
+
+      default:
+        return `${baseMessage} I'm here to help you navigate networking opportunities, find meaningful connections, and make the most of your professional interactions. How can I assist you today?`;
     }
   }
   

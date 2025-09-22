@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { SocketProvider } from "@/context/SocketContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased min-h-screen`}>
         <AuthProvider>
           <ToastProvider>
-            {children}
+            <SocketProvider>
+              {children}
+            </SocketProvider>
           </ToastProvider>
         </AuthProvider>
       </body>

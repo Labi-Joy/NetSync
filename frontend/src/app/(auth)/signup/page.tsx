@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Users, Zap, Target, Award, ArrowRight, Sparkles, Network } from 'lucide-react';
 import Footer from '@/components/ui/Footer';
+import { PasswordStrength } from '@/components/ui/PasswordStrength';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -15,10 +16,14 @@ export default function SignupPage() {
     password: '',
     title: '',
     company: '',
-    experience: 'mid' as 'junior' | 'mid' | 'senior' | 'executive'
+    experience: 'mid' as 'junior' | 'mid' | 'senior' | 'executive',
+    skills: [''],
+    interests: [''],
+    goals: ['']
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   
   const { register } = useAuth();
   const router = useRouter();
@@ -28,6 +33,25 @@ export default function SignupPage() {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear validation errors when user starts typing
+    if (validationErrors.length > 0) {
+      setValidationErrors([]);
+    }
+  };
+
+  const handleArrayChange = (field: 'skills' | 'interests' | 'goals', index: number, value: string) => {
+    const newArray = [...formData[field]];
+    newArray[index] = value;
+    setFormData({ ...formData, [field]: newArray });
+  };
+
+  const addArrayItem = (field: 'skills' | 'interests' | 'goals') => {
+    setFormData({ ...formData, [field]: [...formData[field], ''] });
+  };
+
+  const removeArrayItem = (field: 'skills' | 'interests' | 'goals', index: number) => {
+    const newArray = formData[field].filter((_, i) => i !== index);
+    setFormData({ ...formData, [field]: newArray });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +69,12 @@ export default function SignupPage() {
         professionalInfo: {
           title: formData.title,
           company: formData.company,
-          experience: formData.experience
+          experience: formData.experience,
+          skills: formData.skills.filter(skill => skill.trim() !== ''),
+          interests: formData.interests.filter(interest => interest.trim() !== '')
+        },
+        networkingProfile: {
+          goals: formData.goals.filter(goal => goal.trim() !== '')
         }
       };
 
@@ -56,7 +85,17 @@ export default function SignupPage() {
       router.push('/dashboard/overview');
     } catch (err: any) {
       console.error('❌ Registration failed:', err);
-      setError(err.message || 'Registration failed');
+
+      // Handle validation errors specifically
+      if (err.response?.data?.details && Array.isArray(err.response.data.details)) {
+        const errors = err.response.data.details.map((detail: any) =>
+          `${detail.field}: ${detail.message}`
+        );
+        setValidationErrors(errors);
+        setError('Please fix the following validation errors:');
+      } else {
+        setError(err.message || err.response?.data?.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -205,13 +244,20 @@ export default function SignupPage() {
               </p>
             </div>
             
-            {error && (
+            {(error || validationErrors.length > 0) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6"
               >
-                {error}
+                {error && <div className="font-medium mb-2">{error}</div>}
+                {validationErrors.length > 0 && (
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    {validationErrors.map((errorMsg, index) => (
+                      <li key={index}>{errorMsg}</li>
+                    ))}
+                  </ul>
+                )}
               </motion.div>
             )}
 
@@ -262,6 +308,9 @@ export default function SignupPage() {
                   className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                   placeholder="At least 8 characters"
                 />
+                <div className="mt-3">
+                  <PasswordStrength password={formData.password} showRequirements={true} />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -311,6 +360,108 @@ export default function SignupPage() {
                   <option value="senior">Senior (5+ years)</option>
                   <option value="executive">Executive/Leadership</option>
                 </select>
+              </div>
+
+              {/* Skills Section */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Skills (At least 1 required)
+                </label>
+                {formData.skills.map((skill, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={skill}
+                      onChange={(e) => handleArrayChange('skills', index, e.target.value)}
+                      className="flex-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      placeholder="e.g., JavaScript, React, Project Management"
+                    />
+                    {formData.skills.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('skills', index)}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => addArrayItem('skills')}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  + Add Another Skill
+                </button>
+              </div>
+
+              {/* Interests Section */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Interests (At least 1 required)
+                </label>
+                {formData.interests.map((interest, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={interest}
+                      onChange={(e) => handleArrayChange('interests', index, e.target.value)}
+                      className="flex-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      placeholder="e.g., Machine Learning, Startup Funding, Design"
+                    />
+                    {formData.interests.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('interests', index)}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => addArrayItem('interests')}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  + Add Another Interest
+                </button>
+              </div>
+
+              {/* Goals Section */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Networking Goals (At least 1 required)
+                </label>
+                {formData.goals.map((goal, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={goal}
+                      onChange={(e) => handleArrayChange('goals', index, e.target.value)}
+                      className="flex-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      placeholder="e.g., Find a mentor, Expand professional network"
+                    />
+                    {formData.goals.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeArrayItem('goals', index)}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => addArrayItem('goals')}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  + Add Another Goal
+                </button>
               </div>
               
               <motion.button

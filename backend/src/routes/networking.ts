@@ -1,6 +1,7 @@
 import express from 'express';
-import { findMatches, requestIntroduction, getConnections, updateConnectionStatus, provideFeedback, skipMatch } from '../controllers/networkingController';
+import { findMatches, requestIntroduction, getConnections, updateConnectionStatus, provideFeedback, skipMatch, searchUsers, getConnectionsEnhanced } from '../controllers/networkingController';
 import { authenticateToken } from '../middleware/auth';
+import { validateUserFilters, validateMatchFilters, validateAdvancedPagination } from '../middleware/validation';
 
 const router = express.Router();
 
@@ -27,5 +28,11 @@ router.post('/feedback', authenticateToken, provideFeedback);
 
 // POST /api/networking/skip-match - Skip a potential match
 router.post('/skip-match', authenticateToken, skipMatch);
+
+// GET /api/networking/users/search - Search users with advanced filtering
+router.get('/users/search', authenticateToken, validateUserFilters, searchUsers);
+
+// GET /api/networking/connections-enhanced - Get connections with enhanced pagination
+router.get('/connections-enhanced', authenticateToken, validateMatchFilters, getConnectionsEnhanced);
 
 export default router;

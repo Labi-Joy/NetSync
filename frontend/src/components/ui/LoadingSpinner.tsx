@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-export const LoadingSpinner = ({ size = 'md', text, className = '' }: LoadingSpinnerProps) => {
+const LoadingSpinner = ({ size = 'md', text, className = '' }: LoadingSpinnerProps) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
@@ -36,7 +36,7 @@ export const LoadingSpinner = ({ size = 'md', text, className = '' }: LoadingSpi
   );
 };
 
-export const PageLoading = ({ text = "Loading..." }: { text?: string }) => {
+const PageLoading = ({ text = "Loading..." }: { text?: string }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
       <LoadingSpinner size="lg" text={text} />
@@ -44,7 +44,7 @@ export const PageLoading = ({ text = "Loading..." }: { text?: string }) => {
   );
 };
 
-export const CardLoading = ({ className = "" }: { className?: string }) => {
+const CardLoading = ({ className = "" }: { className?: string }) => {
   return (
     <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 ${className}`}>
       <div className="animate-pulse">
@@ -64,4 +64,5 @@ export const CardLoading = ({ className = "" }: { className?: string }) => {
   );
 };
 
+export { PageLoading, CardLoading, LoadingSpinner };
 export default LoadingSpinner;

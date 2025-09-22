@@ -83,7 +83,7 @@ interface AnalyticsData {
 
 export default function EventAnalyticsPage() {
   const params = useParams();
-  const eventId = params.id as string;
+  const eventId = params.eventId as string;
   
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);

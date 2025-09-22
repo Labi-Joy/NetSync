@@ -2,14 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 export interface ToastType {
   id: string;
-  type: 'success' | 'error' | 'info';
+  type: 'success' | 'error' | 'warning' | 'info';
   title: string;
   message?: string;
   duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  persistent?: boolean;
 }
 
 interface ToastProps {
@@ -18,15 +23,17 @@ interface ToastProps {
 }
 
 const Toast = ({ toast, onRemove }: ToastProps) => {
-  const { id, type, title, message, duration = 5000 } = toast;
+  const { id, type, title, message, duration = 5000, action, persistent } = toast;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onRemove(id);
-    }, duration);
+    if (!persistent && duration > 0) {
+      const timer = setTimeout(() => {
+        onRemove(id);
+      }, duration);
 
-    return () => clearTimeout(timer);
-  }, [id, duration, onRemove]);
+      return () => clearTimeout(timer);
+    }
+  }, [id, duration, onRemove, persistent]);
 
   const getIcon = () => {
     switch (type) {
@@ -34,6 +41,8 @@ const Toast = ({ toast, onRemove }: ToastProps) => {
         return <CheckCircle className="w-5 h-5 text-green-400" />;
       case 'error':
         return <AlertCircle className="w-5 h-5 text-red-400" />;
+      case 'warning':
+        return <AlertTriangle className="w-5 h-5 text-yellow-400" />;
       case 'info':
         return <Info className="w-5 h-5 text-blue-400" />;
     }
@@ -45,8 +54,23 @@ const Toast = ({ toast, onRemove }: ToastProps) => {
         return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
       case 'error':
         return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+      case 'warning':
+        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
       case 'info':
         return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+    }
+  };
+
+  const getProgressBarColor = () => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-400';
+      case 'error':
+        return 'bg-red-400';
+      case 'warning':
+        return 'bg-yellow-400';
+      case 'info':
+        return 'bg-blue-400';
     }
   };
 
@@ -71,6 +95,17 @@ const Toast = ({ toast, onRemove }: ToastProps) => {
                 {message}
               </p>
             )}
+            {action && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                  onClick={action.onClick}
+                >
+                  {action.label}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -82,6 +117,16 @@ const Toast = ({ toast, onRemove }: ToastProps) => {
           <X className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Progress bar for timed toasts */}
+      {!persistent && duration > 0 && (
+        <motion.div
+          className={`h-1 ${getProgressBarColor()}`}
+          initial={{ width: '100%' }}
+          animate={{ width: '0%' }}
+          transition={{ duration: duration / 1000, ease: 'linear' }}
+        />
+      )}
     </motion.div>
   );
 };
