@@ -128,6 +128,7 @@ describe('Demo Flow Integration Tests', () => {
       expect(registerResponse2.body.message).toBe('User registered successfully');
       expect(registerResponse2.body.tokens.accessToken).toBeDefined();
       authToken2 = registerResponse2.body.tokens.accessToken;
+        console.log()
 
       // Step 3: Both users join the event
       await request(app)

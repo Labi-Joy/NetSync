@@ -9,8 +9,10 @@ interface ConfirmDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  message: string;
+  message?: string;
+  description?: string; // Alternative to message
   confirmLabel?: string;
+  confirmText?: string; // Alternative to confirmLabel
   cancelLabel?: string;
   variant?: 'danger' | 'warning' | 'info' | 'success';
   loading?: boolean;
@@ -22,11 +24,15 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   title,
   message,
-  confirmLabel = 'Confirm',
+  description,
+  confirmLabel,
+  confirmText,
   cancelLabel = 'Cancel',
   variant = 'danger',
   loading = false,
 }) => {
+  const displayMessage = message || description || '';
+  const displayConfirmLabel = confirmLabel || confirmText || 'Confirm';
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -145,7 +151,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 {title}
               </h3>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-                {message}
+                {displayMessage}
               </p>
 
               {/* Actions */}
@@ -164,7 +170,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   loading={loading}
                   loadingText="Processing..."
                 >
-                  {confirmLabel}
+                  {displayConfirmLabel}
                 </Button>
               </div>
             </div>
@@ -175,4 +181,5 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   );
 };
 
+export { ConfirmDialog };
 export default ConfirmDialog;

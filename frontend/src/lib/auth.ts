@@ -1,6 +1,6 @@
 import type { User } from "@/types";
 
-export type SessionUser = Pick<User, "id" | "name" | "email" | "wallet_address">;
+export type SessionUser = Pick<User, "_id" | "name" | "email">;
 
 export const mockSessionStore: Record<string, SessionUser> = {};
 

@@ -23,6 +23,10 @@ interface FormFieldProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   showPasswordToggle?: boolean;
+  maxLength?: number;
+  step?: string;
+  min?: string;
+  max?: string;
   validation?: {
     minLength?: number;
     maxLength?: number;
@@ -51,6 +55,10 @@ const FormField: React.FC<FormFieldProps> = ({
   leftIcon,
   rightIcon,
   showPasswordToggle = false,
+  maxLength,
+  step,
+  min,
+  max,
   validation,
 }) => {
   const [internalError, setInternalError] = React.useState<string>('');
@@ -181,6 +189,10 @@ const FormField: React.FC<FormFieldProps> = ({
       leftIcon={leftIcon}
       rightIcon={rightIcon}
       showPasswordToggle={showPasswordToggle || type === 'password'}
+      maxLength={maxLength}
+      step={step}
+      min={min}
+      max={max}
       aria-describedby={
         [
           displayError && `${name}-error`,
@@ -192,4 +204,5 @@ const FormField: React.FC<FormFieldProps> = ({
   );
 };
 
+export { FormField };
 export default FormField;

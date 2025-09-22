@@ -11,10 +11,10 @@ export class MatchingEngine {
     let score = 0;
     const reasons: string[] = [];
 
-    const interests1 = user1.interests ?? [];
-    const interests2 = user2.interests ?? [];
-    const goals1 = user1.goals ?? [];
-    const goals2 = user2.goals ?? [];
+    const interests1 = user1.professionalInfo.interests ?? [];
+    const interests2 = user2.professionalInfo.interests ?? [];
+    const goals1 = user1.networkingProfile.goals ?? [];
+    const goals2 = user2.networkingProfile.goals ?? [];
 
     // Interest overlap (40% of score)
     const sharedInterests = interests1.filter((interest) =>
@@ -35,22 +35,22 @@ export class MatchingEngine {
 
     // Experience level compatibility (20% of score)
     if (
-      user1.experience_level &&
-      user2.experience_level &&
-      this.isExperienceLevelCompatible(user1.experience_level, user2.experience_level)
+      user1.professionalInfo.experience &&
+      user2.professionalInfo.experience &&
+      this.isExperienceLevelCompatible(user1.professionalInfo.experience, user2.professionalInfo.experience)
     ) {
       score += 20;
       reasons.push("Compatible experience levels");
     }
 
     // Availability overlap (10% of score)
-    if (this.hasAvailabilityOverlap(user1.availability, user2.availability)) {
+    if (this.hasAvailabilityOverlap(user1.networkingProfile.availability, user2.networkingProfile.availability)) {
       score += 10;
       reasons.push("Overlapping availability");
     }
 
     return {
-      userId: user2.id,
+      userId: user2._id,
       score: Math.round(score),
       reasons,
     };
@@ -78,19 +78,16 @@ export class MatchingEngine {
     return Math.abs(index1 - index2) <= 2; // Within 2 levels
   }
 
-  private hasAvailabilityOverlap(avail1: any, avail2: any): boolean {
+  private hasAvailabilityOverlap(avail1: string[], avail2: string[]): boolean {
     // Basic heuristic: if both have any data, assume some overlap; if missing, be permissive
-    if (!avail1 || !avail2) return true;
-    try {
-      const days1 = new Set((avail1.days ?? []) as string[]);
-      const days2 = new Set((avail2.days ?? []) as string[]);
-      for (const d of days1) {
-        if (days2.has(d)) return true;
-      }
-      return false;
-    } catch {
-      return true;
+    if (!avail1 || !avail2 || avail1.length === 0 || avail2.length === 0) return true;
+
+    // Check for overlapping availability strings
+    const set1 = new Set(avail1);
+    for (const time of avail2) {
+      if (set1.has(time)) return true;
     }
+    return false;
   }
 }
 

@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { User } from '../models/User';
 import { getFileUrl, deleteFile } from '../middleware/upload';
-import { asyncHandler } from '../middleware/errorHandler';
 
-export const uploadProfilePicture = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+export const uploadProfilePicture = async (req: AuthenticatedRequest, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -28,7 +27,7 @@ export const uploadProfilePicture = asyncHandler(async (req: AuthenticatedReques
     user.profilePicture = fileUrl;
     await user.save();
 
-    res.json({
+    return res.json({
       message: 'Profile picture uploaded successfully',
       profilePicture: fileUrl,
       user: user.toJSON()
@@ -38,11 +37,12 @@ export const uploadProfilePicture = asyncHandler(async (req: AuthenticatedReques
     if (req.file) {
       deleteFile(req.file.filename);
     }
-    throw error;
+    console.error('Upload profile picture error:', error);
+    return res.status(500).json({ error: 'Failed to upload profile picture' });
   }
-});
+};
 
-export const deleteProfilePicture = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+export const deleteProfilePicture = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = await User.findById(req.user!._id);
     if (!user) {
@@ -63,11 +63,12 @@ export const deleteProfilePicture = asyncHandler(async (req: AuthenticatedReques
     user.profilePicture = null;
     await user.save();
 
-    res.json({
+    return res.json({
       message: 'Profile picture deleted successfully',
       user: user.toJSON()
     });
   } catch (error) {
-    throw error;
+    console.error('Delete profile picture error:', error);
+    return res.status(500).json({ error: 'Failed to delete profile picture' });
   }
-});
+};

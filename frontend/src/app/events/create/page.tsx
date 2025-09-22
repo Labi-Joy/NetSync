@@ -74,10 +74,10 @@ export default function CreateEventPage() {
         
         // Auto-populate organizer info
         organizer: {
-          id: user.id,
+          id: user._id,
           name: user.name,
           email: user.email,
-          avatar: user.avatar || '/api/placeholder/40/40'
+          avatar: user.profilePicture || '/api/placeholder/40/40'
         }
       };
 
