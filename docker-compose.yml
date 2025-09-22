@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: netsync-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: netsync
+      MONGO_INITDB_ROOT_PASSWORD: netsync_password
+      MONGO_INITDB_DATABASE: netsync
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - netsync-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: netsync-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    networks:
+      - netsync-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: netsync-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://netsync:netsync_password@mongodb:27017/netsync?authSource=admin
+      REDIS_URL: redis://:redis_password@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRE: 24h
+      JWT_REFRESH_EXPIRE: 7d
+      SENSAY_API_KEY: ${SENSAY_API_KEY}
+      SENSAY_BASE_URL: https://api.sensay.com
+      FRONTEND_URL: http://localhost:3000
+      LOG_LEVEL: info
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - netsync-network
+    volumes:
+      - ./backend/logs:/app/logs
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5000
+    container_name: netsync-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - netsync-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  netsync-network:
+    driver: bridge

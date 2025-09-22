@@ -1,0 +1,1157 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
+import { 
+  Brain, 
+  Hand, 
+  Award, 
+  DollarSign, 
+  Calendar, 
+  User,
+  Users,
+  Target,
+  Zap,
+  Sun,
+  Moon,
+  Shield,
+  Globe,
+  Star,
+  TrendingUp,
+  MessageSquare,
+  Camera,
+  Clock,
+  CheckCircle,
+  ArrowRight,
+  Play,
+  Sparkles,
+  Network,
+  Trophy,
+  Rocket,
+  Heart,
+  ChevronDown
+} from 'lucide-react'
+import Footer from '@/components/ui/Footer'
+
+export default function Home() {
+  const [theme, setTheme] = useState('dark')
+  const [showDemo, setShowDemo] = useState(false)
+  const [activeTab, setActiveTab] = useState('professionals')
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+  
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'light' : 'dark')
+  }
+
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      router.push('/dashboard/overview')
+    } else {
+      router.push('/signup')
+    }
+  }
+
+  const handleViewDemo = () => {
+    setShowDemo(true)
+  }
+
+  const features = [
+    {
+      icon: Brain,
+      title: "AI-Powered Smart Matching",
+      description: "Advanced algorithms analyze your professional profile, skills, experience, and networking goals to find highly compatible connections with detailed compatibility scores.",
+      benefits: ["95% match accuracy", "Personality alignment", "Career goal synergy"]
+    },
+    {
+      icon: Network,
+      title: "Real-Time Conference Integration",
+      description: "Seamlessly connect with other attendees at tech conferences. Get live notifications about nearby networking opportunities and optimal meeting times.",
+      benefits: ["Live event integration", "Location-based matching", "Schedule optimization"]
+    },
+    {
+      icon: Award,
+      title: "NFT Networking Achievements", 
+      description: "Mint unique NFT badges as proof of successful networking connections. Build your on-chain professional reputation and showcase collaboration history.",
+      benefits: ["Verifiable networking history", "Digital reputation building", "Collectible achievements"]
+    },
+    {
+      icon: MessageSquare,
+      title: "AI Chat Assistant",
+      description: "Get personalized networking advice, conversation starters, and meeting suggestions from our AI assistant trained specifically for professional networking.",
+      benefits: ["Smart conversation starters", "Networking tips", "Meeting coordination"]
+    },
+    {
+      icon: DollarSign,
+      title: "Stake & Earn Ecosystem",
+      description: "Stake tokens on promising networking connections and earn rewards when relationships lead to verified long-term professional collaborations.",
+      benefits: ["Passive income potential", "Network value creation", "Long-term relationship rewards"]
+    },
+    {
+      icon: Shield,
+      title: "Privacy-First Web3 Profiles",
+      description: "Control your professional data with blockchain-based identity. Share only what you want, when you want, with full ownership of your networking profile.",
+      benefits: ["Data ownership", "Privacy controls", "Decentralized identity"]
+    }
+  ]
+
+  const stats = [
+    { number: "15,000+", label: "Active Tech Professionals", description: "Growing community of developers, founders, and innovators" },
+    { number: "250+", label: "Conference Partnerships", description: "Integrated with major tech conferences worldwide" },
+    { number: "50,000+", label: "Successful Connections", description: "Meaningful professional relationships formed" },
+    { number: "98%", label: "User Satisfaction Rate", description: "Based on post-networking surveys and feedback" }
+  ]
+
+  const steps = [
+    {
+      step: "01",
+      title: "Create Your Professional Profile",
+      description: "Build a comprehensive profile showcasing your skills, experience, and networking objectives. Connect your Web3 wallet for enhanced features.",
+      details: ["Professional background", "Skills & expertise", "Networking goals", "Availability preferences"],
+      icon: User
+    },
+    {
+      step: "02", 
+      title: "AI Analyzes & Matches You",
+      description: "Our advanced AI evaluates compatibility based on career goals, skill complementarity, experience levels, and communication styles.",
+      details: ["Skill analysis", "Goal alignment", "Communication style", "Experience matching"],
+      icon: Brain
+    },
+    {
+      step: "03",
+      title: "Connect & Schedule Meetups",
+      description: "Browse high-compatibility matches, send connection requests, and use our integrated scheduling tools to coordinate meetings at conferences.",
+      details: ["Browse matches", "Send requests", "Schedule meetings", "Conference coordination"],
+      icon: Calendar
+    },
+    {
+      step: "04",
+      title: "Build & Monetize Your Network",
+      description: "Mint NFT badges for successful connections, earn tokens from valuable introductions, and build your on-chain professional reputation.",
+      details: ["Mint NFT badges", "Earn rewards", "Build reputation", "Long-term value"],
+      icon: Trophy
+    }
+  ]
+
+  const testimonials = [
+    {
+      name: "Sarah Chen",
+      role: "Senior Frontend Developer",
+      company: "TechCorp",
+      avatar: "👩‍💻",
+      content: "NetSync helped me find my co-founder at ETH Denver. The AI matching was incredibly accurate - we had 94% compatibility and similar technical backgrounds.",
+      verified: true
+    },
+    {
+      name: "Marcus Rodriguez",
+      role: "Product Manager",
+      company: "StartupXYZ", 
+      avatar: "👨‍💼",
+      content: "The conference integration is game-changing. I made 12 meaningful connections at Web3 Summit, and the NFT badges are a great conversation starter.",
+      verified: true
+    },
+    {
+      name: "Dr. Emily Watson",
+      role: "AI Research Scientist",
+      company: "DeepMind",
+      avatar: "👩‍🔬",
+      content: "Finally, a networking platform that understands technical professionals. The quality of matches and conversations has been outstanding.",
+      verified: true
+    }
+  ]
+
+  const useCases = [
+    {
+      title: "For Tech Professionals",
+      description: "Find mentors, collaborators, and career opportunities",
+      features: ["Skill-based matching", "Career guidance", "Collaboration opportunities", "Industry insights"],
+      icon: Users,
+      color: "from-blue-600 to-purple-600"
+    },
+    {
+      title: "For Conference Organizers", 
+      description: "Enhance attendee experience with smart networking",
+      features: ["Attendee engagement", "Networking analytics", "Sponsor integration", "Event optimization"],
+      icon: Calendar,
+      color: "from-purple-600 to-pink-600"
+    },
+    {
+      title: "For Companies",
+      description: "Connect with talent and build strategic partnerships",
+      features: ["Talent discovery", "Partnership opportunities", "Brand visibility", "Recruitment tools"],
+      icon: Target,
+      color: "from-pink-600 to-red-600"
+    }
+  ]
+
+  const faqs = [
+    {
+      question: "How does AI matching work?",
+      answer: "Our AI analyzes multiple factors including technical skills, experience level, career goals, communication preferences, and networking objectives. It creates a compatibility score based on how well two professionals might collaborate or benefit from connecting."
+    },
+    {
+      question: "Do I need a Web3 wallet to use NetSync?",
+      answer: "While you can use basic features without a wallet, connecting one unlocks advanced features like NFT badges, token staking, and enhanced privacy controls. We support all major wallets including MetaMask, WalletConnect, and Coinbase Wallet."
+    },
+    {
+      question: "How do NFT networking badges work?",
+      answer: "When you successfully connect and meet with someone through NetSync, both parties can mint an NFT badge commemorating the connection. These badges serve as verifiable proof of your networking activities and help build your on-chain professional reputation."
+    },
+    {
+      question: "Is my data secure and private?",
+      answer: "Yes, we use blockchain technology to give you full control over your data. You decide what information to share and with whom. Your sensitive data is encrypted and stored securely, and you can revoke access at any time."
+    },
+    {
+      question: "How much does NetSync cost?",
+      answer: "NetSync offers a freemium model. Basic networking features are free, while premium features like advanced AI matching, unlimited conference access, and token staking require a subscription or token holding."
+    },
+    {
+      question: "Which conferences are integrated?",
+      answer: "We partner with 250+ tech conferences including ETH Denver, Web3 Summit, TechCrunch Disrupt, Google I/O, and many more. Our integration allows real-time attendee matching and scheduling during events."
+    }
+  ]
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
+      {/* Advanced Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Particles with Network Connections */}
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={`particle-${i}`}
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full shadow-lg"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              filter: 'blur(0.5px)',
+            }}
+            animate={{
+              y: [0, -30, 0],
+              x: [0, Math.random() * 40 - 20, 0],
+              scale: [1, 1.5, 1],
+              opacity: [0.4, 0.9, 0.4],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 3,
+            }}
+          />
+        ))}
+        
+        {/* Large Gradient Orbs */}
+        <motion.div
+          className="absolute w-96 h-96 rounded-full bg-gradient-to-r from-blue-400/20 via-purple-500/15 to-pink-400/20 blur-3xl"
+          style={{ top: '10%', left: '10%' }}
+          animate={{
+            scale: [1, 1.3, 1],
+            rotate: [0, 180, 360],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+        
+        <motion.div
+          className="absolute w-80 h-80 rounded-full bg-gradient-to-r from-cyan-400/20 via-blue-500/15 to-indigo-400/20 blur-3xl"
+          style={{ bottom: '15%', right: '15%' }}
+          animate={{
+            scale: [1.2, 1, 1.2],
+            rotate: [360, 180, 0],
+            opacity: [0.4, 0.7, 0.4],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+        
+        <motion.div
+          className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-purple-400/15 via-pink-500/20 to-red-400/15 blur-3xl"
+          style={{ top: '40%', right: '25%' }}
+          animate={{
+            scale: [1, 1.4, 1],
+            rotate: [0, 360],
+            opacity: [0.2, 0.5, 0.2],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+        
+        {/* Animated Network Grid */}
+        <svg className="absolute inset-0 w-full h-full opacity-20">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ec4899" stopOpacity="0.4" />
+            </linearGradient>
+          </defs>
+          {[...Array(12)].map((_, i) => (
+            <motion.line
+              key={`line-${i}`}
+              x1={`${(i * 15) % 100}%`}
+              y1={`${(i * 23) % 100}%`}
+              x2={`${((i + 3) * 19) % 100}%`}
+              y2={`${((i + 2) * 31) % 100}%`}
+              stroke="url(#lineGradient)"
+              strokeWidth="1"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ 
+                pathLength: [0, 1, 0], 
+                opacity: [0, 0.6, 0],
+                strokeWidth: [1, 2, 1]
+              }}
+              transition={{
+                duration: 6 + Math.random() * 4,
+                repeat: Infinity,
+                delay: Math.random() * 5,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </svg>
+        
+        {/* Floating Geometric Shapes */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`shape-${i}`}
+            className={`absolute ${i % 3 === 0 ? 'w-4 h-4 rounded-full' : i % 3 === 1 ? 'w-3 h-3 rounded-sm rotate-45' : 'w-2 h-6 rounded-full'} bg-gradient-to-r from-blue-400/40 to-purple-500/40 shadow-sm`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -50, 0],
+              x: [0, Math.random() * 30 - 15, 0],
+              rotate: [0, 360],
+              opacity: [0.3, 0.8, 0.3],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 8 + Math.random() * 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 4,
+            }}
+          />
+        ))}
+        
+        {/* Pulsing Network Nodes */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={`node-${i}`}
+            className="absolute w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400/50 to-blue-500/50 shadow-lg"
+            style={{
+              left: `${20 + (i * 15)}%`,
+              top: `${30 + (i * 10)}%`,
+            }}
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.4, 0.9, 0.4],
+              boxShadow: [
+                '0 0 0 0 rgba(59, 130, 246, 0.4)',
+                '0 0 0 20px rgba(59, 130, 246, 0)',
+                '0 0 0 0 rgba(59, 130, 246, 0)'
+              ],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              delay: i * 0.5,
+              ease: "easeOut"
+            }}
+          />
+        ))}
+        
+        {/* Spiral Animation */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-32 h-32"
+          style={{ marginTop: '-64px', marginLeft: '-64px' }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        >
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={`spiral-${i}`}
+              className="absolute w-2 h-2 bg-gradient-to-r from-purple-400/60 to-pink-500/60 rounded-full"
+              style={{
+                top: '50%',
+                left: '50%',
+                transformOrigin: `${20 + i * 10}px 0`,
+              }}
+              animate={{
+                rotate: [0, 360],
+                scale: [1, 1.3, 1],
+                opacity: [0.4, 0.8, 0.4],
+              }}
+              transition={{
+                duration: 4 + i,
+                repeat: Infinity,
+                ease: "linear",
+                delay: i * 0.8,
+              }}
+            />
+          ))}
+        </motion.div>
+        
+        {/* Tech-themed Icons Floating */}
+        <motion.div
+          className="absolute top-20 right-32 w-8 h-8 text-blue-400/30"
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, 15, -15, 0],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <Network className="w-full h-full" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-32 left-20 w-6 h-6 text-purple-400/30"
+          animate={{
+            y: [0, 25, 0],
+            rotate: [0, -20, 20, 0],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        >
+          <Zap className="w-full h-full" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-1/3 left-16 w-5 h-5 text-cyan-400/30"
+          animate={{
+            y: [0, -15, 0],
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4,
+          }}
+        >
+          <Brain className="w-full h-full" />
+        </motion.div>
+        
+        {/* Dynamic Constellation Effect */}
+        <div className="absolute inset-0">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={`constellation-${i}`}
+              className="absolute w-1 h-1 bg-blue-400/60 rounded-full"
+              style={{
+                left: `${15 + (i * 6)}%`,
+                top: `${20 + (i * 4)}%`,
+              }}
+              animate={{
+                scale: [1, 2, 1],
+                opacity: [0.3, 1, 0.3],
+                boxShadow: [
+                  '0 0 0 0 rgba(59, 130, 246, 0.4)',
+                  '0 0 10px 2px rgba(59, 130, 246, 0.6)',
+                  '0 0 0 0 rgba(59, 130, 246, 0.4)'
+                ],
+              }}
+              transition={{
+                duration: 3 + (i * 0.2),
+                repeat: Infinity,
+                delay: i * 0.3,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+          
+          {/* Connecting lines between constellation points */}
+          <svg className="absolute inset-0 w-full h-full">
+            {[...Array(8)].map((_, i) => (
+              <motion.path
+                key={`constellation-line-${i}`}
+                d={`M ${15 + (i * 6)}% ${20 + (i * 4)}% Q ${25 + (i * 6)}% ${15 + (i * 4)}% ${35 + (i * 6)}% ${20 + ((i + 1) * 4)}%`}
+                stroke="url(#lineGradient)"
+                strokeWidth="1"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ 
+                  pathLength: [0, 1, 0],
+                  opacity: [0, 0.4, 0]
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  delay: i * 0.8,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </svg>
+        </div>
+        
+        {/* Floating Data Streams */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={`data-stream-${i}`}
+            className="absolute flex flex-col space-y-1"
+            style={{
+              left: `${10 + (i * 20)}%`,
+              top: `${10 + (i * 15)}%`,
+            }}
+            animate={{
+              y: [0, -100],
+              opacity: [0, 0.6, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              delay: i * 2,
+              ease: "linear"
+            }}
+          >
+            {[...Array(4)].map((_, j) => (
+              <motion.div
+                key={j}
+                className="w-1 h-3 bg-gradient-to-t from-transparent via-blue-400/60 to-purple-500/60 rounded-full"
+                animate={{
+                  scaleY: [1, 1.5, 1],
+                  opacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: j * 0.2,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </motion.div>
+        ))}
+        
+        {/* Morphing Gradient Blobs */}
+        <motion.div
+          className="absolute w-72 h-72 rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(139,92,246,0.10) 35%, rgba(236,72,153,0.08) 70%, transparent 100%)',
+            top: '60%',
+            left: '70%',
+            filter: 'blur(40px)',
+          }}
+          animate={{
+            scale: [1, 1.3, 0.8, 1],
+            rotate: [0, 90, 180, 270, 360],
+            opacity: [0.3, 0.6, 0.4, 0.3],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <motion.div
+          className="absolute w-56 h-56 rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(34,197,94,0.12) 0%, rgba(59,130,246,0.08) 50%, transparent 100%)',
+            top: '20%',
+            left: '80%',
+            filter: 'blur(35px)',
+          }}
+          animate={{
+            scale: [0.8, 1.2, 1, 0.8],
+            rotate: [360, 270, 180, 90, 0],
+            opacity: [0.2, 0.5, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        {/* Hexagonal Grid Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="hexGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <motion.polygon
+                  points="30,2 50,15 50,37 30,50 10,37 10,15"
+                  fill="none"
+                  stroke="rgba(59, 130, 246, 0.2)"
+                  strokeWidth="1"
+                  animate={{
+                    strokeOpacity: [0.1, 0.3, 0.1],
+                    strokeWidth: [1, 1.5, 1],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hexGrid)" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-50 px-6 py-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200/50 dark:border-slate-700/50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center space-x-3"
+          >
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+              <Network className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">NetSync</span>
+          </motion.div>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#features" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</a>
+            <a href="#how-it-works" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">How It Works</a>
+            <a href="#testimonials" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Success Stories</a>
+            <a href="#pricing" className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Pricing</a>
+            
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            
+            {isAuthenticated ? (
+              <Link href="/dashboard/overview" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                Dashboard
+              </Link>
+            ) : (
+              <Link href="/signup" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                Get Started
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div 
+                className="inline-flex items-center space-x-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-6"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Now live with 15,000+ tech professionals</span>
+              </motion.div>
+              
+              <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-slate-900 dark:text-white mb-6">
+                The Future of
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
+                  Professional Networking
+                </span>
+              </h1>
+              
+              <p className="text-xl lg:text-2xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto mb-8 leading-relaxed">
+                AI-powered matching for tech professionals. Connect meaningfully at conferences, 
+                build your on-chain reputation with NFT badges, and earn from valuable networking relationships.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleGetStarted}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg px-8 py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-all"
+                >
+                  <Rocket className="w-5 h-5" />
+                  <span>{isAuthenticated ? 'Go to Dashboard' : 'Start Networking for Free'}</span>
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleViewDemo}
+                  className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-lg px-8 py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-all"
+                >
+                  <Play className="w-5 h-5" />
+                  <span>Watch Demo</span>
+                </motion.button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Trusted by professionals from:</span>
+                <div className="flex items-center space-x-6">
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400">Google</span>
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400">Microsoft</span>
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400">Meta</span>
+                  <span className="text-lg font-semibold text-slate-600 dark:text-slate-400">OpenAI</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="relative z-10 px-6 py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+                  {stat.label}
+                </div>
+                <div className="text-sm text-slate-600 dark:text-slate-400">
+                  {stat.description}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="relative z-10 px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              Revolutionary Networking Features
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Everything you need to build meaningful professional relationships in the Web3 era
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700"
+              >
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mb-6">
+                  <feature.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                  {feature.description}
+                </p>
+                <ul className="space-y-2">
+                  {feature.benefits.map((benefit, idx) => (
+                    <li key={idx} className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="relative z-10 px-6 py-20 bg-slate-50 dark:bg-slate-800/50">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              How NetSync Works
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Four simple steps to transform your professional networking experience
+            </p>
+          </motion.div>
+
+          <div className="space-y-16">
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className={`flex items-center gap-12 ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}
+              >
+                <div className="flex-1">
+                  <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+                    <div className="text-sm font-bold text-blue-600 dark:text-blue-400 mb-2">
+                      STEP {step.step}
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                      {step.title}
+                    </h3>
+                    <p className="text-lg text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                      {step.description}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {step.details.map((detail, idx) => (
+                        <div key={idx} className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <span>{detail}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <step.icon className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              Built for Every Professional
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Whether you're an individual professional, conference organizer, or company, NetSync adapts to your networking needs
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {useCases.map((useCase, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700"
+              >
+                <div className={`w-14 h-14 bg-gradient-to-r ${useCase.color} rounded-xl flex items-center justify-center mb-6`}>
+                  <useCase.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                  {useCase.title}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 mb-6">
+                  {useCase.description}
+                </p>
+                <ul className="space-y-3">
+                  {useCase.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="relative z-10 px-6 py-20 bg-slate-50 dark:bg-slate-800/50">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              Success Stories
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Real professionals sharing their NetSync networking experiences
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700"
+              >
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="text-4xl">{testimonial.avatar}</div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h4 className="font-bold text-slate-900 dark:text-white">{testimonial.name}</h4>
+                      {testimonial.verified && (
+                        <CheckCircle className="w-4 h-4 text-blue-500" />
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.role}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-500">{testimonial.company}</p>
+                  </div>
+                </div>
+                <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                  "{testimonial.content}"
+                </p>
+                <div className="flex items-center space-x-1 mt-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300">
+              Everything you need to know about NetSync
+            </p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden"
+              >
+                <button
+                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                >
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    {faq.question}
+                  </h3>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-slate-500 transition-transform ${
+                      expandedFaq === index ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+                {expandedFaq === index && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="px-6 pb-6"
+                  >
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="relative z-10 px-6 py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              Ready to Transform Your Networking?
+            </h2>
+            <p className="text-xl mb-8 opacity-90 leading-relaxed">
+              Join 15,000+ tech professionals who are already building meaningful connections and earning from their networks.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleGetStarted}
+                className="bg-white text-blue-600 hover:bg-slate-50 text-lg px-8 py-4 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2"
+              >
+                <Rocket className="w-5 h-5" />
+                <span>{isAuthenticated ? 'Go to Dashboard' : 'Start Free Today'}</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleViewDemo}
+                className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-xl text-lg font-semibold transition-all flex items-center justify-center space-x-2"
+              >
+                <Play className="w-5 h-5" />
+                <span>Watch Demo</span>
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Demo Modal */}
+      {showDemo && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-4xl w-full max-h-[90vh] overflow-auto bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-2xl"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+                NetSync Demo
+              </h2>
+              <button
+                onClick={() => setShowDemo(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-500 dark:text-slate-400"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-8">
+              <div className="aspect-video bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                  <Play className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600 dark:text-slate-300">Demo video placeholder</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    Experience NetSync's AI matching, conference integration, and NFT badges
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                    Key Features Demo
+                  </h3>
+                  <div className="space-y-3">
+                    {['AI-powered matching', 'Real-time conference integration', 'NFT networking badges', 'Earning mechanisms'].map((feature, i) => (
+                      <div key={i} className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                        <span className="text-slate-700 dark:text-slate-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                    Try Live Demo
+                  </h3>
+                  <div className="bg-slate-50 dark:bg-slate-700 p-6 rounded-xl text-center">
+                    <div className="text-4xl mb-4">🚀</div>
+                    <p className="text-slate-600 dark:text-slate-300 mb-4">
+                      Experience the full NetSync platform
+                    </p>
+                    <Link 
+                      href="/signup" 
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+                    >
+                      Start Free Trial
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setShowDemo(false)}
+                className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 px-8 py-3 rounded-lg font-medium transition-all"
+              >
+                Close Demo
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </div>
+  )
+}
