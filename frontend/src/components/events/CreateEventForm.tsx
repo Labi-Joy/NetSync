@@ -309,7 +309,15 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
                     value={formData.description}
                     onChange={(e) => updateField('description', e.target.value)}
                     rows={6}
-                    className={`input-base h-auto ${errors.description ? 'border-red-500' : ''}`}
+                    className={`
+                      w-full px-4 py-3 text-base transition-all duration-200
+                      border border-neutral-600 rounded-lg bg-neutral-800
+                      text-neutral-100 placeholder-neutral-400
+                      focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20
+                      disabled:opacity-50 disabled:cursor-not-allowed
+                      resize-vertical min-h-[120px]
+                      ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}
+                    `}
                     placeholder="Provide a detailed description of your event, including what attendees can expect, key topics, speakers, and any other relevant information..."
                     required
                   />
