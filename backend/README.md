@@ -23,7 +23,7 @@ PORT=10000
 JWT_SECRET=your_jwt_secret_here
 MONGODB_URI=your_mongodb_atlas_connection_string
 REDIS_URL=your_redis_cloud_connection_string
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=https://your-frontend-domain.com
 SENSAY_API_KEY=your_sensay_api_key (optional)
 ```
 
