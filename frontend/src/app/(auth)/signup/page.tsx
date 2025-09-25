@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Users, Zap, Target, Award, ArrowRight, Sparkles, Network } from 'lucide-react';
 import Footer from '@/components/ui/Footer';
 import { PasswordStrength } from '@/components/ui/PasswordStrength';
+import Logo from '@/components/ui/Logo';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -231,11 +232,16 @@ export default function SignupPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4"
+                className="mb-6"
               >
-                <Sparkles className="w-8 h-8 text-white" />
+                <Logo
+                  variant="icon"
+                  size="lg"
+                  animate={true}
+                  className="justify-center"
+                />
               </motion.div>
-              
+
               <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                 Create Account
               </h2>

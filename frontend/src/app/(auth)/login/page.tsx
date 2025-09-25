@@ -10,6 +10,7 @@ import { Shield, Zap, Globe, Sparkles, ArrowRight, Lock, Mail, Wallet } from 'lu
 import Button from '@/components/ui/Button';
 import FormField from '@/components/forms/FormField';
 import Footer from '@/components/ui/Footer';
+import Logo from '@/components/ui/Logo';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -270,13 +271,16 @@ export default function LoginPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl mb-4"
-                role="img"
-                aria-label="NetSync logo"
+                className="mb-6"
               >
-                <Sparkles className="w-8 h-8 text-white" aria-hidden="true" />
+                <Logo
+                  variant="icon"
+                  size="lg"
+                  animate={true}
+                  className="justify-center"
+                />
               </motion.div>
-              
+
               <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
                 Welcome Back
               </h1>

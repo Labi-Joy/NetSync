@@ -33,10 +33,10 @@ export default function DashboardOverviewPage() {
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dashboardData, setDashboardData] = useState({
-    matchesCount: 23,
-    connectionsCount: 47,
-    eventsCount: 5,
-    profileViews: 94
+    matchesCount: 0,
+    connectionsCount: 0,
+    eventsCount: 0,
+    profileViews: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -127,32 +127,11 @@ export default function DashboardOverviewPage() {
     router.push('/profile');
   };
 
-  // Mock data for enhanced dashboard
-  const recentActivities = [
-    { type: 'match', user: 'Sarah Chen', action: 'New high-compatibility match', time: '2 hours ago', score: 95 },
-    { type: 'event', event: 'Web3 Summit 2024', action: 'Registered successfully', time: '1 day ago' },
-    { type: 'message', user: 'David Kim', action: 'Sent you a connection request', time: '2 days ago' },
-    { type: 'achievement', action: 'Earned "Super Connector" badge', time: '3 days ago' }
-  ];
-
-  const upcomingEvents = [
-    { name: 'Web3 Summit 2024', date: 'Dec 15-17', location: 'San Francisco', attendees: 1200 },
-    { name: 'DeFi Innovation Conference', date: 'Jan 8-10', location: 'New York', attendees: 800 },
-    { name: 'Blockchain Builders Meetup', date: 'Jan 20', location: 'Austin', attendees: 150 }
-  ];
-
-  const topMatches = [
-    { name: 'Alex Rodriguez', title: 'Senior Frontend Developer', company: 'Coinbase', score: 98, interests: ['React', 'Web3', 'DeFi'] },
-    { name: 'Maria Santos', title: 'Blockchain Architect', company: 'Polygon', score: 95, interests: ['Solidity', 'Layer 2', 'DeFi'] },
-    { name: 'James Park', title: 'Product Manager', company: 'Uniswap', score: 92, interests: ['DeFi', 'Product', 'Strategy'] }
-  ];
-
-  const achievements = [
-    { name: 'First Connection', description: 'Made your first professional connection', earned: true },
-    { name: 'Event Attendee', description: 'Attended 3+ networking events', earned: true },
-    { name: 'Super Connector', description: 'Connected with 10+ professionals', earned: true },
-    { name: 'Mentor', description: 'Provided mentorship to 5+ people', earned: false },
-  ];
+  // State for real data (will be loaded from APIs)
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [topMatches, setTopMatches] = useState<any[]>([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">

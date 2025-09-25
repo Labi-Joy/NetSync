@@ -35,6 +35,7 @@ import {
   ChevronDown
 } from 'lucide-react'
 import Footer from '@/components/ui/Footer'
+import Logo from '@/components/ui/Logo'
 
 export default function Home() {
   const [theme, setTheme] = useState('dark')
@@ -625,12 +626,13 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center space-x-3"
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-              <Network className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">NetSync</span>
+            <Logo
+              variant="full"
+              size="md"
+              href="/"
+              animate={false}
+            />
           </motion.div>
           
           <div className="hidden md:flex items-center space-x-8">

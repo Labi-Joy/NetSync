@@ -4,17 +4,18 @@ import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Users, 
-  User, 
-  Calendar, 
-  Bell, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Users,
+  User,
+  Calendar,
+  Bell,
+  Settings,
   HelpCircle,
   Network,
   MessageSquare
 } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,9 +57,12 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
-          <Link href="/dashboard/overview" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-white">NetSync</div>
-          </Link>
+          <Logo
+            variant="full"
+            size="md"
+            href="/dashboard/overview"
+            className="text-white hover:opacity-90 transition-opacity"
+          />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">

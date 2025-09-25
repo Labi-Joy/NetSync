@@ -11,8 +11,36 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NetSync - Conference Networking Bot Platform",
-  description: "The Conference Catalyst - sophisticated networking bot platform that connects conference attendees based on interests, goals, and expertise.",
+  title: "NetSync - Professional Networking Platform",
+  description: "Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.",
+  icons: {
+    icon: [
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/icon.svg',
+        type: 'image/svg+xml',
+        sizes: '60x60',
+      }
+    ],
+    apple: {
+      url: '/icon.svg',
+      type: 'image/svg+xml',
+    },
+  },
+  openGraph: {
+    title: 'NetSync - Professional Networking Platform',
+    description: 'Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.',
+    type: 'website',
+    siteName: 'NetSync',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NetSync - Professional Networking Platform',
+    description: 'Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.',
+  },
 };
 
 export default function RootLayout({
