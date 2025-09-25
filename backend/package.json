@@ -17,7 +17,7 @@
     "migrate:up": "npm run migrate up",
     "migrate:down": "npm run migrate down",
     "db:init": "ts-node src/scripts/init-db.ts",
-    "db:seed": "npm run db:init",
+    "db:seed": "ts-node src/scripts/seedDatabase.ts",
     "generate-env": "ts-node src/scripts/generate-env.ts"
   },
   "dependencies": {
