@@ -258,12 +258,12 @@ export default function LoginPage() {
         </div>
         
         {/* Right Side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-neutral-50 dark:bg-neutral-900 overflow-y-auto">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-neutral-50 dark:bg-neutral-900 min-h-screen">
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-md my-auto"
+            className="w-full max-w-md"
           >
             <header className="text-center mb-8">
               <motion.div
