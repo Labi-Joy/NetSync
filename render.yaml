@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: netsync-backend
+    runtime: node
+    rootDir: ./backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    env: node
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: FRONTEND_URL
+        value: https://netsync-frontend.onrender.com
+      - key: SENSAY_API_KEY
+        sync: false
+    healthCheckPath: /health
+
+  - type: web
+    name: netsync-frontend
+    runtime: node
+    rootDir: ./frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    env: node
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://netsync-backend.onrender.com
+    publishPath: ./dist
+
+databases:
+  - name: netsync-redis
+    plan: free
