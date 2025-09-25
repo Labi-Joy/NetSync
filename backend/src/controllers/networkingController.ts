@@ -10,21 +10,22 @@ const matchingService = new MatchingService();
 export const findMatches = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { eventId, limit = 10 } = req.method === 'GET' ? req.query : req.body;
-    
-    if (!req.user.currentEvent) {
-      res.status(400).json({ error: 'Must be attending an event to find matches' });
-      return;
-    }
-    
+
+    // Allow general networking without requiring current event
+    // Use provided eventId, or user's current event, or null for general matching
+    const targetEventId = eventId || req.user.currentEvent?.toString() || null;
+
     const matches = await matchingService.findMatches(
       (req.user._id as any).toString(),
-      eventId || req.user.currentEvent!.toString(),
+      targetEventId,
       parseInt(limit as string)
     );
-    
+
     res.json({
       matches,
-      count: matches.length
+      count: matches.length,
+      eventId: targetEventId,
+      scope: targetEventId ? 'event-specific' : 'general'
     });
   } catch (error) {
     console.error('Find matches error:', error);

@@ -64,28 +64,41 @@ export class MatchingService {
     return 'Interesting cross-domain connection opportunity';
   }
   
-  public async findMatches(userId: string, eventId: string, limit: number = 10): Promise<any[]> {
+  public async findMatches(userId: string, eventId: string | null, limit: number = 10): Promise<any[]> {
     try {
       const currentUser = await User.findById(userId);
       if (!currentUser) throw new Error('User not found');
-      
-      const eventAttendees = await User.find({
-        currentEvent: eventId,
-        _id: { $ne: userId }
-      });
-      
-      const existingConnections = await Connection.find({
-        eventId,
-        participants: userId
-      }).select('participants');
-      
+
+      // Find potential matches based on context
+      let potentialUsers: any[];
+
+      if (eventId) {
+        // Event-specific matching: find other attendees of the same event
+        potentialUsers = await User.find({
+          currentEvent: eventId,
+          _id: { $ne: userId }
+        });
+      } else {
+        // General networking: find all users except current user
+        potentialUsers = await User.find({
+          _id: { $ne: userId }
+        }).limit(100); // Limit for performance
+      }
+
+      // Get existing connections to exclude them
+      const connectionFilter = eventId
+        ? { eventId, participants: userId }
+        : { participants: userId };
+
+      const existingConnections = await Connection.find(connectionFilter).select('participants');
+
       const connectedUserIds = new Set(
-        existingConnections.flatMap(conn => 
+        existingConnections.flatMap(conn =>
           conn.participants.map(p => p.toString()).filter(id => id !== userId)
         )
       );
-      
-      const potentialMatches = eventAttendees.filter(user => 
+
+      const potentialMatches = potentialUsers.filter(user =>
         !connectedUserIds.has((user._id as any).toString())
       );
       
