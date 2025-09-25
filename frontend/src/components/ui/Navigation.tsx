@@ -16,6 +16,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -87,8 +88,9 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* Notifications Bell (Desktop) */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* Notifications Bell & Theme Toggle (Desktop) */}
+          <div className="hidden lg:flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/notifications"
               className={`relative p-2 rounded-lg transition-colors ${
@@ -161,7 +163,7 @@ export default function Navigation() {
                   {dropdownItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = isActivePath(item.href);
-                    
+
                     return (
                       <Link
                         key={item.href}
@@ -181,6 +183,11 @@ export default function Navigation() {
                       </Link>
                     );
                   })}
+
+                  {/* Theme Toggle for Mobile */}
+                  <div className="lg:hidden px-4 py-2">
+                    <ThemeToggle />
+                  </div>
                 </div>
 
                 <button

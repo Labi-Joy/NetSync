@@ -27,9 +27,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useState, useEffect } from 'react';
 import { enhancedNetworkingAPI, enhancedEventAPI } from '@/lib/apiWithRetry';
 import Link from 'next/link';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function DashboardOverviewPage() {
   const { user, isAuthenticated } = useAuth();
+  const { theme, resolvedTheme } = useTheme();
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dashboardData, setDashboardData] = useState({
@@ -39,6 +41,12 @@ export default function DashboardOverviewPage() {
     profileViews: 0
   });
   const [loading, setLoading] = useState(true);
+
+  // State for real data (will be loaded from APIs)
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [topMatches, setTopMatches] = useState<any[]>([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -126,12 +134,6 @@ export default function DashboardOverviewPage() {
   const handleViewProfile = () => {
     router.push('/profile');
   };
-
-  // State for real data (will be loaded from APIs)
-  const [recentActivities, setRecentActivities] = useState<any[]>([]);
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
-  const [topMatches, setTopMatches] = useState<any[]>([]);
-  const [achievements, setAchievements] = useState<any[]>([]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -365,13 +367,13 @@ export default function DashboardOverviewPage() {
                       className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer group"
                     >
                       <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm">
-                        {match.name.split(' ').map(n => n[0]).join('')}
+                        {match.name.split(' ').map((n: string) => n[0]).join('')}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{match.name}</h4>
                         <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">{match.title} at {match.company}</p>
                         <div className="flex gap-1">
-                          {match.interests.slice(0, 2).map((interest, i) => (
+                          {match.interests.slice(0, 2).map((interest: string, i: number) => (
                             <span key={i} className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">
                               {interest}
                             </span>
@@ -585,6 +587,7 @@ export default function DashboardOverviewPage() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }
