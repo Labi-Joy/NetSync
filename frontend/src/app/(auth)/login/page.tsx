@@ -75,7 +75,26 @@ export default function LoginPage() {
       router.push(redirectTo || '/dashboard/overview');
     } catch (err: any) {
       console.error('Login failed:', err);
-      const errorMessage = err.message || 'Login failed. Please check your credentials and try again.';
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText
+      });
+
+      let errorMessage = 'Login failed. Please check your credentials and try again.';
+
+      // Handle specific error types
+      if (err.response?.status === 401) {
+        errorMessage = 'Invalid email or password. Please try again.';
+      } else if (err.response?.status === 429) {
+        errorMessage = 'Too many login attempts. Please wait a few minutes and try again.';
+      } else if (err.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       showError(errorMessage);
       setErrors({ general: errorMessage });
     } finally {

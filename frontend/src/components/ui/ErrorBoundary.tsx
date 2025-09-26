@@ -99,8 +99,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       stack: error.stack,
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'unknown',
       eventId: this.state.eventId,
     };
 
@@ -128,7 +128,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   };
 
   private handleReload = () => {
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   };
 
   private copyErrorDetails = () => {
@@ -139,7 +141,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       stack: error?.stack,
       componentStack: errorInfo?.componentStack,
       timestamp: new Date().toISOString(),
-      url: window.location.href,
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
     }, null, 2);
 
     navigator.clipboard.writeText(errorDetails).then(() => {

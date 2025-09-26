@@ -30,10 +30,10 @@ const isRetryableError = (error: AxiosError): boolean => {
     // Network errors are retryable
     return true;
   }
-  
+
   const status = error.response.status;
-  // Retry on server errors (5xx) and rate limiting (429)
-  return status >= 500 || status === 429;
+  // Only retry on server errors (5xx), NOT on rate limiting (429)
+  return status >= 500;
 };
 
 // Enhanced request interceptor
@@ -86,8 +86,8 @@ apiWithRetry.interceptors.response.use(
       data: error.response?.data
     });
 
-    // Handle token refresh for 401 errors
-    if (error.response?.status === 401 && !config?._isRetry) {
+    // Handle token refresh for 401 errors (but not for auth endpoints)
+    if (error.response?.status === 401 && !config?._isRetry && !config?.url?.includes('/auth/')) {
       try {
         const refreshToken = Cookies.get('refreshToken');
         if (!refreshToken) {
@@ -100,7 +100,7 @@ apiWithRetry.interceptors.response.use(
         });
 
         const { accessToken, refreshToken: newRefreshToken } = response.data.tokens;
-        
+
         Cookies.set('accessToken', accessToken, { expires: 1 });
         Cookies.set('refreshToken', newRefreshToken, { expires: 7 });
 
@@ -112,10 +112,10 @@ apiWithRetry.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error('🚨 Token refresh failed:', refreshError);
-        // Clear tokens and redirect to login
+        // Clear tokens and redirect to login only if not already on auth pages
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);

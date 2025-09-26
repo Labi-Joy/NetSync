@@ -1,5 +1,6 @@
 "use client";
 import Navigation from "@/components/ui/Navigation";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { motion } from "framer-motion";
 import { 
   Users, 
@@ -109,9 +110,15 @@ export default function DashboardOverviewPage() {
     loadDashboardData();
   }, [isAuthenticated, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Authentication check
+  // Authentication redirect with useEffect
+  useEffect(() => {
+    if (!isAuthenticated && typeof window !== 'undefined') {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  // Don't render anything if not authenticated
   if (!isAuthenticated) {
-    router.push('/login');
     return null;
   }
 
@@ -137,6 +144,7 @@ export default function DashboardOverviewPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <AnimatedBackground />
       <Navigation />
       
       <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">

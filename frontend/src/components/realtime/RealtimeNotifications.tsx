@@ -67,7 +67,11 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({ cl
         data,
         action: {
           label: 'View Match',
-          onClick: () => window.location.href = '/matches'
+          onClick: () => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/matches';
+            }
+          }
         }
       });
     };
@@ -80,7 +84,11 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({ cl
         data,
         action: {
           label: 'View Request',
-          onClick: () => window.location.href = '/connections'
+          onClick: () => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/connections';
+            }
+          }
         }
       });
     };
@@ -93,7 +101,11 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({ cl
         data,
         action: {
           label: 'View Details',
-          onClick: () => window.location.href = '/dashboard'
+          onClick: () => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/dashboard';
+            }
+          }
         }
       });
     };

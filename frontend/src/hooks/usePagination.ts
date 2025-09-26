@@ -173,10 +173,12 @@ export const usePagination = (options: UsePaginationOptions = {}): UsePagination
     });
 
     const queryString = params.toString();
-    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
+    const newUrl = queryString ? `?${queryString}` : (typeof window !== 'undefined' ? window.location.pathname : '');
 
     // Update URL without triggering navigation
-    window.history.replaceState({}, '', newUrl);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', newUrl);
+    }
   }, [state, syncWithUrl, initialLimit, initialSort, initialSortOrder]);
 
   // Actions

@@ -216,8 +216,8 @@ export default function NotificationsPage() {
                 )}
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-white">Notifications</h1>
-                <p className="text-slate-300">
+                <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Notifications</h1>
+                <p className="text-slate-600 dark:text-slate-300">
                   {unreadCount > 0 ? `${unreadCount} unread notifications` : 'All caught up!'}
                 </p>
               </div>

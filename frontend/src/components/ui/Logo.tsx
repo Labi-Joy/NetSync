@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 interface LogoProps {
   variant?: 'full' | 'icon' | 'text';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   showTagline?: boolean;
   href?: string;
   className?: string;
@@ -24,7 +24,8 @@ export const Logo: React.FC<LogoProps> = ({
   const sizeClasses = {
     sm: 'h-8',
     md: 'h-12',
-    lg: 'h-16'
+    lg: 'h-24',
+    xl: 'h-20'
   };
 
   const NetSyncIcon = ({ className: iconClassName = '' }: { className?: string }) => (
@@ -95,7 +96,7 @@ export const Logo: React.FC<LogoProps> = ({
           <div className="flex flex-col">
             <NetSyncText
               className={`
-                ${size === 'sm' ? 'text-lg' : size === 'md' ? 'text-2xl' : 'text-3xl'}
+                ${size === 'sm' ? 'text-lg' : size === 'md' ? 'text-2xl' : size === 'lg' ? 'text-4xl' : 'text-5xl'}
                 leading-tight
               `}
             />

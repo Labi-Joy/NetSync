@@ -6,6 +6,7 @@ import { useToast } from '@/context/ToastContext';
 import { enhancedNetworkingAPI } from '@/lib/apiWithRetry';
 import { Users, Search, Lock, Heart, X, UserPlus, Star, Building, MapPin } from 'lucide-react';
 import Navigation from "@/components/ui/Navigation";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 
 interface MatchItem {
   user: {
@@ -92,7 +93,7 @@ export default function MatchesPage() {
           ];
 
           setMatches(mockMatches);
-          setError('Using demo data - connect to backend for real matches');
+          // Remove demo message - setError('Using demo data - connect to backend for real matches');
         }
       } catch (error: any) {
         console.error('❌ Failed to load matches:', error);
@@ -142,6 +143,7 @@ export default function MatchesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <AnimatedBackground />
       <Navigation />
 
       <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
@@ -226,7 +228,7 @@ export default function MatchesPage() {
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-yellow-500" />
                     <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      {match.compatibility.score}%
+                      {match.compatibility?.score || 0}%
                     </span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">match</span>
                   </div>
@@ -278,7 +280,7 @@ export default function MatchesPage() {
                     Why you match:
                   </p>
                   <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                    {match.compatibility.reasons.slice(0, 2).map((reason, i) => (
+                    {(match.compatibility?.reasons || []).slice(0, 2).map((reason, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                         {reason}

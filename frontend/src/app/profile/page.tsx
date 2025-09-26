@@ -141,78 +141,105 @@ export default function ProfileOnboarding() {
     }
   };
 
+  // Redirect unauthenticated users to home page
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/');
+    }
+  }, [isAuthenticated, router]);
+
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card p-8 text-center max-w-md"
-        >
-          <div className="text-4xl mb-4">🔒</div>
-          <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
-            Authentication Required
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400">
-            Please log in to complete your profile
-          </p>
-        </motion.div>
-      </div>
-    );
+    return null; // Will redirect, so don't render anything
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       <Navigation />
-      <div className="px-6 sm:px-10 md:px-16 py-16 max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-4xl font-bold mb-2 text-slate-900 dark:text-white">
-            Complete Your Profile
-          </h1>
-          <div className="flex items-center gap-4">
-            <p className="text-slate-600 dark:text-slate-400">
-              Step {step + 1} of {steps.length}: {steps[step]}
-              {isNewUser && <span className="ml-2 px-2 py-1 text-xs rounded bg-purple-600 text-white">New User</span>}
-            </p>
-            <div className="flex gap-1">
-              {steps.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    idx <= step ? 'bg-purple-500' : 'bg-gray-600'
-                  }`}
-                  style={{ 
-                    backgroundColor: idx <= step ? '#8b5cf6' : '#64748b' 
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* Networking Style Display */}
-          {networkingStyle && (
-            <div className="mt-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Your networking style: <span className="text-purple-600 dark:text-purple-400">{networkingStyle.style}</span>
-              </p>
-            </div>
-          )}
-          {error && (
-            <div className="mt-4 bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-        </motion.div>
 
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold">
+                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+            </div>
+            <h1 className="text-3xl font-bold mb-2">
+              Complete Your Profile
+            </h1>
+            <p className="text-blue-100 text-lg">
+              {steps[step]} • Step {step + 1} of {steps.length}
+            </p>
+
+            {/* Progress Bar */}
+            <div className="w-full max-w-md mx-auto mt-6">
+              <div className="bg-white/20 rounded-full h-2">
+                <div
+                  className="bg-white rounded-full h-2 transition-all duration-500"
+                  style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {isNewUser && (
+              <span className="inline-block mt-4 px-3 py-1 bg-white/20 rounded-full text-sm font-medium">
+                New User
+              </span>
+            )}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Networking Style Display */}
+        {networkingStyle && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">✓</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white">Networking Style Identified</h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Your style: <span className="text-green-600 dark:text-green-400 font-medium">{networkingStyle.style}</span>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs">!</span>
+              </div>
+              <p className="text-red-700 dark:text-red-300">{error}</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Form Container */}
         <motion.div
           key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="card p-8 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 mb-8"
         >
           {step === 0 && (
             <div className="space-y-6">
@@ -223,7 +250,7 @@ export default function ProfileOnboarding() {
                 <input 
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20"
+                  className="w-full px-4 py-3 rounded-xl border transition-all focus:outline-none bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 hover:border-slate-400 dark:hover:border-slate-500"
                   placeholder="Enter your full name"
                   required
                 />
@@ -236,7 +263,7 @@ export default function ProfileOnboarding() {
                   <input 
                     value={formData.currentRole}
                     onChange={(e) => handleInputChange('currentRole', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20"
+                    className="w-full px-4 py-3 rounded-xl border transition-all focus:outline-none bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 hover:border-slate-400 dark:hover:border-slate-500"
                     placeholder="e.g. Frontend Developer"
                     required
                   />
@@ -248,7 +275,7 @@ export default function ProfileOnboarding() {
                   <input 
                     value={formData.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border transition-colors focus:outline-none bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20"
+                    className="w-full px-4 py-3 rounded-xl border transition-all focus:outline-none bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 hover:border-slate-400 dark:hover:border-slate-500"
                     placeholder="e.g. Acme Corp"
                     required
                   />
@@ -264,13 +291,13 @@ export default function ProfileOnboarding() {
               </p>
               <div className="flex flex-wrap gap-3">
                 {["AI/ML", "Frontend", "Backend", "Web3", "DeFi", "DevOps", "Mobile", "DevRel", "Design", "Security"].map((interest) => (
-                  <button 
-                    key={interest} 
+                  <button
+                    key={interest}
                     onClick={() => handleArrayToggle('techInterests', interest)}
-                    className={`btn text-sm transition-colors ${
-                      formData.techInterests.includes(interest) 
-                        ? 'btn-primary' 
-                        : 'btn-outline'
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border ${
+                      formData.techInterests.includes(interest)
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-md hover:shadow-lg'
+                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-600'
                     }`}
                   >
                     {interest}
@@ -290,10 +317,10 @@ export default function ProfileOnboarding() {
                   <button 
                     key={goal} 
                     onClick={() => handleArrayToggle('networkingGoals', goal)}
-                    className={`btn text-sm transition-colors ${
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border ${
                       formData.networkingGoals.includes(goal) 
-                        ? 'btn-primary' 
-                        : 'btn-outline'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-md hover:shadow-lg'
+                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-600'
                     }`}
                   >
                     {goal}
@@ -322,8 +349,8 @@ export default function ProfileOnboarding() {
                     onClick={() => handleInputChange('experienceLevel', level.value)}
                     className={`btn p-4 text-center transition-colors ${
                       formData.experienceLevel === level.value 
-                        ? 'btn-primary' 
-                        : 'btn-outline'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-md hover:shadow-lg'
+                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-600'
                     }`}
                   >
                     {level.label}
@@ -339,19 +366,19 @@ export default function ProfileOnboarding() {
                 When are you available for networking?
               </p>
               <div className="grid sm:grid-cols-2 gap-6">
-                <div className="card p-6">
+                <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-6 border border-slate-200 dark:border-slate-600">
                   <p className="font-semibold mb-4 text-slate-900 dark:text-white">
                     Preferred Days
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                      <button 
-                        key={day} 
+                      <button
+                        key={day}
                         onClick={() => handleArrayToggle('preferredDays', day)}
-                        className={`btn text-sm transition-colors ${
-                          formData.preferredDays.includes(day) 
-                            ? 'btn-primary' 
-                            : 'btn-outline'
+                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border ${
+                          formData.preferredDays.includes(day)
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-md hover:shadow-lg'
+                            : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-600'
                         }`}
                       >
                         {day.slice(0, 3)}
@@ -359,19 +386,19 @@ export default function ProfileOnboarding() {
                     ))}
                   </div>
                 </div>
-                <div className="card p-6">
+                <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-6 border border-slate-200 dark:border-slate-600">
                   <p className="font-semibold mb-4 text-slate-900 dark:text-white">
                     Preferred Times
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {["Morning", "Afternoon", "Evening", "Flexible"].map((time) => (
-                      <button 
-                        key={time} 
+                      <button
+                        key={time}
                         onClick={() => handleArrayToggle('preferredTimes', time)}
-                        className={`btn text-sm transition-colors ${
-                          formData.preferredTimes.includes(time) 
-                            ? 'btn-primary' 
-                            : 'btn-outline'
+                        className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border ${
+                          formData.preferredTimes.includes(time)
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-transparent shadow-md hover:shadow-lg'
+                            : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-600'
                         }`}
                       >
                         {time}
@@ -384,26 +411,45 @@ export default function ProfileOnboarding() {
           )}
         </motion.div>
 
-        <div className="flex justify-between items-center">
-          <button 
-            onClick={back} 
-            className="btn btn-secondary"
+        {/* Navigation Buttons */}
+        <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 rounded-2xl p-6">
+          <button
+            onClick={back}
             disabled={step === 0}
-            style={{ opacity: step === 0 ? 0.5 : 1 }}
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
+              step === 0
+                ? 'opacity-40 cursor-not-allowed bg-slate-200 dark:bg-slate-700 text-slate-500'
+                : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
+            }`}
           >
-            Back
+            ← Back
           </button>
+
           {step < steps.length - 1 ? (
-            <button onClick={next} className="btn btn-primary">
-              Next Step
+            <button
+              onClick={next}
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium transition-all shadow-lg hover:shadow-xl"
+            >
+              Next Step →
             </button>
           ) : (
-            <button 
+            <button
               onClick={handleComplete}
               disabled={loading}
-              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-lg hover:shadow-xl"
             >
-              {loading ? 'Saving...' : 'Complete Profile'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" strokeDasharray="32" strokeDashoffset="32">
+                      <animate attributeName="strokeDashoffset" values="32;0" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                  </svg>
+                  Saving...
+                </span>
+              ) : (
+                '✓ Complete Profile'
+              )}
             </button>
           )}
         </div>

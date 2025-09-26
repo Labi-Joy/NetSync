@@ -41,10 +41,10 @@ export default function Error({
             transition={{ delay: 0.3 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-white mb-4">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               Something went wrong!
             </h1>
-            <p className="text-slate-300 text-lg mb-4">
+            <p className="text-slate-600 dark:text-slate-300 text-lg mb-4">
               We encountered an unexpected error. Don't worry, our team has been notified and we're working on it.
             </p>
             

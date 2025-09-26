@@ -116,7 +116,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             label: 'View Match',
             onClick: () => {
               // Navigate to matches page
-              window.location.href = '/matches';
+              if (typeof window !== 'undefined') {
+                window.location.href = '/matches';
+              }
             }
           }
         }
@@ -133,7 +135,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             label: 'View Request',
             onClick: () => {
               // Navigate to connections page
-              window.location.href = '/connections';
+              if (typeof window !== 'undefined') {
+                window.location.href = '/connections';
+              }
             }
           }
         }
@@ -150,7 +154,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             label: 'View Details',
             onClick: () => {
               // Navigate to meetings/calendar
-              window.location.href = '/dashboard';
+              if (typeof window !== 'undefined') {
+                window.location.href = '/dashboard';
+              }
             }
           }
         }

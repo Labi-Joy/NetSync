@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NetSync - Professional Networking Platform",
+  title: "NetSync",
   description: "Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.",
   icons: {
     icon: [
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'NetSync - Professional Networking Platform',
+    title: 'NetSync',
     description: 'Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.',
     type: 'website',
     siteName: 'NetSync',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NetSync - Professional Networking Platform',
+    title: 'NetSync',
     description: 'Connect with like-minded professionals, discover opportunities, and grow your network with AI-powered matching.',
   },
 };

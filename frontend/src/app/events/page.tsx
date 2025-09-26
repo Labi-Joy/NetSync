@@ -20,6 +20,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import Navigation from '@/components/ui/Navigation';
+import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -81,16 +82,16 @@ export default function EventsPage() {
         // Transform backend data to match frontend interface
         const transformedEvents: Event[] = response.data.events?.map((event: any) => ({
           id: event._id || event.id,
-          title: event.title,
-          description: event.description,
-          date: new Date(event.date),
+          title: event.name || event.title || 'Untitled Event',
+          description: event.description || 'No description available',
+          date: event.startDate ? new Date(event.startDate) : new Date(),
           endDate: event.endDate ? new Date(event.endDate) : undefined,
-          location: event.location,
-          venue: event.venue || event.location,
-          type: event.type,
-          category: event.category || event.tags || [],
-          attendeeCount: event.attendeeCount || event.registrations?.length || 0,
-          maxAttendees: event.maxAttendees,
+          location: event.venue?.address || event.location || 'Location TBD',
+          venue: event.venue?.name || event.venue || event.location || 'Venue TBD',
+          type: event.type || 'meetup',
+          category: event.tags || event.category || [],
+          attendeeCount: event.attendees?.length || 0,
+          maxAttendees: event.capacity || event.maxAttendees || 100,
           price: event.price || 0,
           currency: event.currency || 'USD',
           imageUrl: event.imageUrl || '/api/placeholder/600/300',
@@ -317,6 +318,7 @@ export default function EventsPage() {
     return (
       <ProtectedRoute>
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+          <AnimatedBackground />
           <Navigation />
           <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 py-8">
             <div className="animate-pulse space-y-6">
@@ -336,6 +338,7 @@ export default function EventsPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <AnimatedBackground />
         <Navigation />
         
         <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 py-8">
@@ -346,10 +349,10 @@ export default function EventsPage() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-blue-400" />
+                <Calendar className="w-8 h-8 text-blue-500 dark:text-blue-400" />
                 <div>
-                  <h1 className="text-4xl font-bold text-white">Events & Conferences</h1>
-                  <p className="text-slate-300">Discover and join networking events in your industry</p>
+                  <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Events & Conferences</h1>
+                  <p className="text-slate-600 dark:text-slate-300">Discover and join networking events in your industry</p>
                 </div>
               </div>
               
@@ -416,7 +419,7 @@ export default function EventsPage() {
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                      {category === 'all' ? 'All Categories' : category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Category'}
                     </option>
                   ))}
                 </select>
@@ -428,7 +431,7 @@ export default function EventsPage() {
                 >
                   {eventTypes.map(type => (
                     <option key={type} value={type}>
-                      {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+                      {type === 'all' ? 'All Types' : type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Type'}
                     </option>
                   ))}
                 </select>
@@ -493,7 +496,7 @@ export default function EventsPage() {
                         event.type === 'workshop' ? 'bg-purple-500 text-white' :
                         'bg-orange-500 text-white'
                       }`}>
-                        {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                        {event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : 'Event'}
                       </span>
                     </div>
                   </div>
@@ -501,19 +504,19 @@ export default function EventsPage() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-xl font-bold text-white leading-tight">
-                        {event.title}
+                        {event?.title || 'Untitled Event'}
                       </h3>
                     </div>
 
                     <p className="text-slate-300 text-sm mb-4 line-clamp-2">
-                      {event.description}
+                      {event?.description || 'No description available'}
                     </p>
 
                     {/* Event Details */}
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <Calendar className="w-4 h-4" />
-                        <span>{formatDate(event.date)}</span>
+                        <span>{event?.date ? formatDate(event.date) : 'TBD'}</span>
                         {event.endDate && (
                           <span>- {formatDate(event.endDate)}</span>
                         )}
@@ -521,21 +524,21 @@ export default function EventsPage() {
                       
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <MapPin className="w-4 h-4" />
-                        <span>{event.location}</span>
+                        <span>{event?.location || 'Location TBD'}</span>
                       </div>
                       
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <Users className="w-4 h-4" />
                         <span>
-                          {event.attendeeCount} attendees
-                          {event.maxAttendees && ` / ${event.maxAttendees}`}
+                          {event?.attendeeCount || 0} attendees
+                          {event?.maxAttendees && ` / ${event.maxAttendees}`}
                         </span>
                       </div>
                     </div>
 
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {event.tags.slice(0, 3).map(tag => (
+                      {(event?.tags || []).slice(0, 3).map(tag => (
                         <span
                           key={tag}
                           className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full"
@@ -543,9 +546,9 @@ export default function EventsPage() {
                           {tag}
                         </span>
                       ))}
-                      {event.tags.length > 3 && (
+                      {(event?.tags || []).length > 3 && (
                         <span className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full">
-                          +{event.tags.length - 3}
+                          +{(event?.tags || []).length - 3}
                         </span>
                       )}
                     </div>
@@ -553,7 +556,7 @@ export default function EventsPage() {
                     {/* Price and Actions */}
                     <div className="flex items-center justify-between">
                       <div className="text-white font-bold">
-                        {event.price === 0 ? 'Free' : `$${event.price}`}
+                        {(event?.price ?? 0) === 0 ? 'Free' : `$${event?.price ?? 0}`}
                       </div>
                       
                       <div className="flex gap-2">

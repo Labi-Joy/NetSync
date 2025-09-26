@@ -115,9 +115,9 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <SettingsIcon className="w-8 h-8 text-blue-400" />
-              <h1 className="text-4xl font-bold text-white">Settings</h1>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Settings</h1>
             </div>
-            <p className="text-slate-300">Manage your account preferences and privacy settings</p>
+            <p className="text-slate-600 dark:text-slate-300">Manage your account preferences and privacy settings</p>
           </motion.div>
 
           <div className="grid lg:grid-cols-4 gap-8">

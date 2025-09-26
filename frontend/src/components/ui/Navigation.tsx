@@ -16,7 +16,6 @@ import {
   MessageSquare
 } from 'lucide-react';
 import Logo from './Logo';
-import ThemeToggle from './ThemeToggle';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,11 +34,9 @@ export default function Navigation() {
   };
 
   const navigationItems = [
-    { href: '/dashboard/overview', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/matches', label: 'Matches', icon: Users },
-    { href: '/events', label: 'Events', icon: Calendar },
     { href: '/connections', label: 'Network', icon: Network },
-    { href: '/chat', label: 'AI Chat', icon: MessageSquare },
+    { href: '/events', label: 'Events', icon: Calendar },
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
@@ -54,150 +51,81 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 glass-card border-b border-slate-200/20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo/Brand */}
-          <Logo
-            variant="full"
-            size="md"
-            href="/dashboard/overview"
-            className="text-white hover:opacity-90 transition-opacity"
-          />
+    <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Brand */}
+          <Link
+            href="/matches"
+            className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          >
+            NetSync
+          </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          {/* Center Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = isActivePath(item.href);
-              
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                      : 'text-white hover:text-blue-400 hover:bg-slate-700/50'
+                      ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  {item.label}
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </div>
 
-          {/* Notifications Bell & Theme Toggle (Desktop) */}
-          <div className="hidden lg:flex items-center gap-2">
-            <ThemeToggle />
-            <Link
-              href="/notifications"
-              className={`relative p-2 rounded-lg transition-colors ${
-                isActivePath('/notifications')
-                  ? 'bg-blue-500/20 text-blue-400'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              <Bell className="w-5 h-5" />
-              {/* Notification badge - you can make this dynamic */}
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center">
-              </span>
-            </Link>
-          </div>
-
-          {/* User Menu */}
-          <div className="relative">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors"
-            >
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm font-medium">
+          {/* User Section */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-sm">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
-              <span className="hidden sm:block">{user?.name || 'User'}</span>
-              <svg 
-                className={`w-4 h-4 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <span className="hidden sm:block text-slate-700 dark:text-slate-300 font-medium text-sm">
+                {user?.name?.split(' ')[0] || 'User'}
+              </span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="ml-2 px-3 py-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/10"
+            >
+              Logout
             </button>
+          </div>
+        </div>
 
-            {/* Dropdown Menu */}
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 glass-card rounded-lg shadow-xl border border-slate-200/20 py-2">
-                <div className="px-4 py-3 border-b border-slate-200/20">
-                  <p className="text-sm text-white font-medium">{user?.name}</p>
-                  <p className="text-xs text-slate-300">{user?.email}</p>
-                </div>
-                
-                {/* Mobile Navigation Links */}
-                <div className="lg:hidden border-b border-slate-200/20">
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = isActivePath(item.href);
-                    
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setIsMenuOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                          isActive
-                            ? 'text-blue-400 bg-blue-500/10'
-                            : 'text-white hover:bg-slate-700/50'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
+        {/* Mobile Navigation */}
+        <div className="md:hidden pb-3 border-t border-slate-200 dark:border-slate-700 pt-3">
+          <div className="flex space-x-1">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = isActivePath(item.href);
 
-                {/* Dropdown Items */}
-                <div className="border-b border-slate-200/20">
-                  {dropdownItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = isActivePath(item.href);
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setIsMenuOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                          isActive
-                            ? 'text-blue-400 bg-blue-500/10'
-                            : 'text-white hover:bg-slate-700/50'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {item.label}
-                        {item.href === '/notifications' && (
-                          <span className="ml-auto w-2 h-2 bg-red-500 rounded-full"></span>
-                        )}
-                      </Link>
-                    );
-                  })}
-
-                  {/* Theme Toggle for Mobile */}
-                  <div className="lg:hidden px-4 py-2">
-                    <ThemeToggle />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700/50 transition-colors"
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium rounded-lg transition-all ${
+                    isActive
+                      ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
                 >
-                  Sign out
-                </button>
-              </div>
-            )}
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -230,8 +230,8 @@ export default function HelpPage() {
             <div className="flex items-center gap-3 mb-4">
               <HelpCircle className="w-8 h-8 text-blue-400" />
               <div>
-                <h1 className="text-4xl font-bold text-white">Help & Support</h1>
-                <p className="text-slate-300">Find answers to your questions and get help when you need it</p>
+                <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Help & Support</h1>
+                <p className="text-slate-600 dark:text-slate-300">Find answers to your questions and get help when you need it</p>
               </div>
             </div>
 
