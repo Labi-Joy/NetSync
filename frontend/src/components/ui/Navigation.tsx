@@ -56,7 +56,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Brand */}
           <Link
-            href="/matches"
+            href="/dashboard/overview"
             className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
           >
             NetSync
