@@ -18,7 +18,7 @@ services:
       - key: REDIS_URL
         sync: false
       - key: FRONTEND_URL
-        value: http://localhost:3000
+        value: https://net-sync-event.vercel.app
       - key: SENSAY_API_KEY
         sync: false
     healthCheckPath: /health
