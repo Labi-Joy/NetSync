@@ -110,18 +110,22 @@ export const trackRequestMetadata = (req: AuthenticatedRequest, res: Response, n
 // CORS configuration for production
 export const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [
       'http://localhost:3000',
       'https://localhost:3000'
     ];
-    
+
+    console.log('CORS Check - Origin:', origin, 'Allowed Origins:', allowedOrigins);
+
     // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
+      console.log('CORS - Origin allowed:', origin);
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.error('CORS - Origin rejected:', origin, 'Allowed:', allowedOrigins);
+      callback(new Error(`Not allowed by CORS - Origin: ${origin}`));
     }
   },
   credentials: true,
