@@ -19,7 +19,9 @@ services:
       - key: REDIS_URL
         sync: false
       - key: FRONTEND_URL
-        value: https://netsync-frontend.onrender.com
+        value: https://net-sync-event.vercel.app
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000,https://localhost:3000,https://net-sync-event.vercel.app
       - key: SENSAY_API_KEY
         sync: false
     healthCheckPath: /health
@@ -36,7 +38,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: https://netsync-backend.onrender.com
+        value: https://netsync-kwrz.onrender.com
     publishPath: ./dist
 
 databases:
