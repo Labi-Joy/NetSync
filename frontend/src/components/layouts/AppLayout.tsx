@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { PresenceIndicator } from '@/components/realtime/PresenceIndicator';
@@ -93,10 +94,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title, description }) =
           <div className="flex-shrink-0 flex border-t border-primary-light p-4">
             <div className="flex items-center">
               <div>
-                <img
+                <Image
                   className="inline-block h-10 w-10 rounded-full"
                   src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=cdff81&color=251a1e`}
-                  alt={user?.name}
+                  alt={user?.name || 'User'}
+                  width={40}
+                  height={40}
                 />
               </div>
               <div className="ml-3">
@@ -152,10 +155,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title, description }) =
           <div className="flex-shrink-0 flex border-t border-primary-light p-4">
             <div className="flex items-center w-full">
               <div>
-                <img
+                <Image
                   className="inline-block h-9 w-9 rounded-full"
                   src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=cdff81&color=251a1e`}
-                  alt={user?.name}
+                  alt={user?.name || 'User'}
+                  width={36}
+                  height={36}
                 />
               </div>
               <div className="ml-3 flex-1">

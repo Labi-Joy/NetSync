@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -103,15 +103,7 @@ export default function EventAttendeesPage() {
     revenue: 0
   });
 
-  useEffect(() => {
-    loadEventAndAttendees();
-  }, [eventId]);
-
-  useEffect(() => {
-    filterAttendees();
-  }, [attendees, searchTerm, statusFilter, ticketFilter]);
-
-  const loadEventAndAttendees = async () => {
+  const loadEventAndAttendees = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -218,9 +210,9 @@ export default function EventAttendeesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId]);
 
-  const filterAttendees = () => {
+  const filterAttendees = useCallback(() => {
     let filtered = attendees;
 
     if (statusFilter !== 'all') {
@@ -240,7 +232,15 @@ export default function EventAttendeesPage() {
     }
 
     setFilteredAttendees(filtered);
-  };
+  }, [attendees, searchTerm, statusFilter, ticketFilter]);
+
+  useEffect(() => {
+    loadEventAndAttendees();
+  }, [loadEventAndAttendees]);
+
+  useEffect(() => {
+    filterAttendees();
+  }, [filterAttendees]);
 
   const handleCheckIn = async (attendeeId: string) => {
     try {

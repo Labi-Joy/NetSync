@@ -91,6 +91,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     };
   }, [isAuthenticated, user]);
 
+  const updatePresenceData = useCallback((totalOnlineDelta: number, eventAttendeesDelta: number) => {
+    setPresenceData(prev => ({
+      totalOnline: Math.max(0, prev.totalOnline + totalOnlineDelta),
+      eventAttendees: Math.max(0, prev.eventAttendees + eventAttendeesDelta),
+      nearbyUsers: prev.nearbyUsers // This would be updated by proximity detection
+    }));
+  }, []);
+
   const setupSocketEventListeners = useCallback(() => {
     // Connection events
     socketManager.on('connect', () => {
@@ -235,15 +243,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       showInfo('Event Update', data.message || 'Event information has been updated');
     });
 
-  }, [showSuccess, showInfo, showWarning]);
+  }, [showSuccess, showInfo, showWarning, updatePresenceData]);
 
-  const updatePresenceData = useCallback((totalOnlineDelta: number, eventAttendeesDelta: number) => {
-    setPresenceData(prev => ({
-      totalOnline: Math.max(0, prev.totalOnline + totalOnlineDelta),
-      eventAttendees: Math.max(0, prev.eventAttendees + eventAttendeesDelta),
-      nearbyUsers: prev.nearbyUsers // This would be updated by proximity detection
-    }));
-  }, []);
+  // Set up socket event listeners when connected
+  useEffect(() => {
+    if (isConnected && socketManager) {
+      setupSocketEventListeners();
+    }
+  }, [isConnected, setupSocketEventListeners]);
 
   // Socket action methods
   const joinEvent = useCallback((eventId: string) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Calendar,
@@ -76,15 +76,7 @@ export default function EventManagePage() {
     upcomingEvents: 0
   });
 
-  useEffect(() => {
-    loadMyEvents();
-  }, []);
-
-  useEffect(() => {
-    filterEvents();
-  }, [events, searchTerm, statusFilter]);
-
-  const loadMyEvents = async () => {
+  const loadMyEvents = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -188,9 +180,9 @@ export default function EventManagePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filterEvents = () => {
+  const filterEvents = useCallback(() => {
     let filtered = events;
 
     if (statusFilter !== 'all') {
@@ -205,7 +197,15 @@ export default function EventManagePage() {
     }
 
     setFilteredEvents(filtered);
-  };
+  }, [events, searchTerm, statusFilter]);
+
+  useEffect(() => {
+    loadMyEvents();
+  }, [loadMyEvents]);
+
+  useEffect(() => {
+    filterEvents();
+  }, [filterEvents]);
 
   const handleDeleteEvent = async () => {
     if (!selectedEvent) return;

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { enhancedBotAPI } from "@/lib/apiWithRetry";
 import { useToast } from "@/context/ToastContext";
 
@@ -23,7 +23,7 @@ export function BotChat({ userId }: { userId: string }) {
   const [typing, setTyping] = useState(false);
   const { showSuccess, showError, showInfo } = useToast();
 
-  const initializeBotSession = async () => {
+  const initializeBotSession = useCallback(async () => {
       if (!userId || initialized) return;
       
       try {
@@ -69,13 +69,13 @@ export function BotChat({ userId }: { userId: string }) {
           }
         });
       }
-    };
+    }, [userId, initialized, showSuccess, showError]);
 
   // Initialize bot session when component mounts
   useEffect(() => {
     if (!userId || initialized) return;
     initializeBotSession();
-  }, [userId, initialized, showError, showSuccess]);
+  }, [userId, initialized, initializeBotSession]);
 
   const sendMessage = async (message: string) => {
     if (!message.trim()) return;

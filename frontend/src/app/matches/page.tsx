@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { enhancedNetworkingAPI } from '@/lib/apiWithRetry';
@@ -129,12 +130,12 @@ export default function MatchesPage() {
             <p className="text-slate-600 dark:text-slate-400 mb-6">
               Please log in to view your professional matches
             </p>
-            <a
+            <Link
               href="/login"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Go to Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -196,18 +197,18 @@ export default function MatchesPage() {
               We couldn't find any compatible matches right now. Try updating your profile.
             </p>
             <div className="flex gap-4 justify-center">
-              <a
+              <Link
                 href="/profile"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 Update Profile
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/events"
                 className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 Browse Events
-              </a>
+              </Link>
             </div>
           </div>
         )}

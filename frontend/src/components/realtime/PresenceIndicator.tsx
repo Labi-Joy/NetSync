@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useSocket } from '@/context/SocketContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -136,10 +137,12 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                       className="flex items-center space-x-2 p-2 rounded hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                     >
                       <div className="relative">
-                        <img
+                        <Image
                           src={user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=cdff81&color=251a1e`}
                           alt={user.name}
                           className="w-6 h-6 rounded-full"
+                          width={24}
+                          height={24}
                         />
                         <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-neutral-900 ${getStatusColor(user.status)}`} />
                       </div>
